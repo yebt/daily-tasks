@@ -4,11 +4,7 @@ import { computed } from 'vue'
 import { useCurrentUser, useFirebaseAuth } from 'vuefire'
 
 export const useAuthStore = defineStore('auth', () => {
-  const auth = useFirebaseAuth()
-
-  if (!auth) {
-    return null
-  }
+  const auth = useFirebaseAuth()!
 
   const user = useCurrentUser()
   const login = (email: string, passwrd: string) => signInWithEmailAndPassword(auth, email, passwrd)
