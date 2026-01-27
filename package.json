@@ -13,7 +13,8 @@
     "lint": "run-s lint:*",
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
-    "format": "prettier --write --experimental-cli src/"
+    "format:prettier": "prettier --write --experimental-cli src/",
+    "format": "oxfmt src/"
   },
   "dependencies": {
     "firebase": "^12.8.0",
@@ -44,6 +45,7 @@
     "jiti": "^2.6.1",
     "jsdom": "^27.4.0",
     "npm-run-all2": "^8.0.4",
+    "oxfmt": "^0.27.0",
     "oxlint": "~1.41.0",
     "prettier": "3.8.1",
     "typescript": "~5.9.3",
