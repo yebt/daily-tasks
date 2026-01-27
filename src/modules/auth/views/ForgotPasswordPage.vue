@@ -29,28 +29,52 @@ const handleReset = async function () {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-100 flex items-center justify-center">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-      <div class="mb-8 text-center">
-        <h1 class="text-2xl font-semibold text-slate-800">Recover password</h1>
-        <p class="text-sm text-slate-500 mt-1">Enter your email and we’ll send you a reset link</p>
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div class="max-w-md w-full p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
+      <!-- Success state -->
+      <div v-if="sent" class="text-center animate-fade-in">
+        <div class="i-lucide-mail-check w-16 h-16 text-slate-800 mx-auto mb-4" />
+        <h2 class="text-2xl font-bold text-gray-800">Email sent</h2>
+        <p class="text-gray-500 mt-2">Check your inbox to reset your password.</p>
+        <button @click="router.push({ name: 'login' })"
+          class="mt-6 w-full py-2.5 text-slate-800 font-medium hover:underline">
+          Back to login
+        </button>
       </div>
-      <form class="space-y-5">
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
-          <input type="email" placeholder="you@example.com"
-            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-slate-800" />
+
+      <!-- Form state -->
+      <div v-else>
+        <div class="flex flex-col items-center mb-6">
+          <div class="i-lucide-key-round w-12 h-12 text-slate-800 mb-2" />
+          <h2 class="text-2xl font-bold text-gray-800">Forgot your password?</h2>
+          <p class="text-sm text-center text-gray-500 mt-1">
+            Enter your email and we’ll send you a recovery link.
+          </p>
         </div>
 
-        <button type="submit"
-          class="w-full rounded-lg bg-slate-800 text-white py-2.5 text-sm font-medium hover:bg-slate-700 transition">
-          Send recovery link
-        </button>
-      </form>
+        <form @submit.prevent="handleReset" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                <div class="i-lucide-mail w-5 h-5" />
+              </span>
+              <input v-model="mail" type="email" required placeholder="you@email.com"
+                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800/20 focus:border-slate-800 outline-none transition" />
+            </div>
+            <p v-if="errMsg" class="mt-2 text-xs text-red-500">{{ errMsg }}</p>
+          </div>
 
-      <div class="mt-6 text-center text-sm text-slate-600">
-        Remembered your password?
-        <a href="#" class="text-slate-800 font-medium hover:underline">Back to login</a>
+          <button type="submit" :disabled="loading"
+            class="w-full py-3 bg-slate-800 text-white rounded-lg font-semibold hover:bg-slate-700 active:scale-95 disabled:opacity-50 transition">
+            {{ loading ? 'Sending…' : 'Send instructions' }}
+          </button>
+
+          <button type="button" @click="router.push({ name: 'login' })"
+            class="w-full text-sm text-gray-500 hover:text-gray-700 transition">
+            Cancel and go back
+          </button>
+        </form>
       </div>
     </div>
   </div>
