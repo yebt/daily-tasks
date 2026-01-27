@@ -16,9 +16,8 @@ const errMsg = ref('')
 const handleLogin = async function () {
   try {
     loading.value = true
-    await new Promise((resolve) => setTimeout(resolve, 400))
-    // await authStore.login(mail.value, pass.value)
-    // router.push('/')
+    await authStore.login(mail.value, pass.value, rememerMe.value)
+    router.push('/')
   } catch (error) {
     console.error('Access Error:', error)
   } finally {

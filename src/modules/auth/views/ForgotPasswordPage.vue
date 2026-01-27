@@ -80,13 +80,13 @@ const handleReset = async function () {
             {{ loading ? 'Sending…' : 'Send instructions' }}
           </button>
 
-          <button
-            type="button"
-            @click="router.push({ name: 'login' })"
-            class="w-full text-sm text-gray-500 hover:text-gray-700 transition"
+          <RouterLink
+            :to="{name:'login'}"
+            class="w-full text-sm text-gray-500 hover:text-gray-700 transition hover:underline"
           >
+
             Cancel and go back
-          </button>
+          </RouterLink>
         </form>
       </div>
     </div>

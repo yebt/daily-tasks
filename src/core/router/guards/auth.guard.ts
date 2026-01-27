@@ -6,8 +6,10 @@ export const authGuard = async (
   from: RouteLocationNormalized,
   next: NavigationGuardNext,
 ) => {
-  const requiresAtuh = to.matched.some((record) => record.meta.requiresAtuh)
   const user = await getCurrentUser()
+
+  const requiresAtuh = to.matched.some((record) => record.meta.requiresAtuh)
+  const requiresNoAuth = to.matched.some((record) => record.meta.requiresNoAuth)
 
   if (requiresAtuh && !user) {
     next({
@@ -16,7 +18,11 @@ export const authGuard = async (
     })
     return
   }
-  if (to.name == 'login' && user) {
+  // if (to.name == 'login' && user) {
+  //   next({ name: 'home' })
+  //   return
+  // }
+  if (requiresNoAuth && user) {
     next({ name: 'home' })
     return
   }
