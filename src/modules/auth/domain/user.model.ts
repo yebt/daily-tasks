@@ -4,4 +4,3 @@ export interface UserEntity {
   displayName: string | null
   photoURL: string | null
 }
-
