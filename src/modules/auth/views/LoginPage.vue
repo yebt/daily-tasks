@@ -45,8 +45,13 @@ const handleLogin = async function () {
             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
               <div class="i-lucide-mail w-5 h-5" />
             </span>
-            <input v-model="mail" type="email" required placeholder="you@email.com"
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800/20 focus:border-slate-800 outline-none transition" />
+            <input
+              v-model="mail"
+              type="email"
+              required
+              placeholder="you@email.com"
+              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800/20 focus:border-slate-800 outline-none transition"
+            />
           </div>
         </div>
 
@@ -56,16 +61,24 @@ const handleLogin = async function () {
             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
               <div class="i-lucide-lock w-5 h-5" />
             </span>
-            <input v-model="pass" type="password" required placeholder="••••••••"
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800/20 focus:border-slate-800 outline-none transition" />
+            <input
+              v-model="pass"
+              type="password"
+              required
+              placeholder="••••••••"
+              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800/20 focus:border-slate-800 outline-none transition"
+            />
           </div>
           <p v-if="errMsg" class="mt-2 text-xs text-red-500">{{ errMsg }}</p>
         </div>
 
         <div class="flex items-center justify-between text-sm">
           <label class="flex items-center gap-2 text-gray-600">
-            <input type="checkbox" v-model="rememerMe"
-              class="rounded border-gray-300 text-slate-800 focus:ring-slate-800" />
+            <input
+              type="checkbox"
+              v-model="rememerMe"
+              class="rounded border-gray-300 text-slate-800 focus:ring-slate-800"
+            />
             Remember me
           </label>
 
@@ -74,8 +87,11 @@ const handleLogin = async function () {
           </RouterLink>
         </div>
 
-        <button type="submit" :disabled="loading"
-          class="w-full py-3 bg-slate-800 text-white rounded-lg font-semibold hover:bg-slate-700 active:scale-95 disabled:opacity-50 transition">
+        <button
+          type="submit"
+          :disabled="loading"
+          class="w-full py-3 bg-slate-800 text-white rounded-lg font-semibold hover:bg-slate-700 active:scale-95 disabled:opacity-50 transition"
+        >
           {{ loading ? 'Signing in…' : 'Sign in' }}
         </button>
       </form>

@@ -36,8 +36,10 @@ const handleReset = async function () {
         <div class="i-lucide-mail-check w-16 h-16 text-slate-800 mx-auto mb-4" />
         <h2 class="text-2xl font-bold text-gray-800">Email sent</h2>
         <p class="text-gray-500 mt-2">Check your inbox to reset your password.</p>
-        <button @click="router.push({ name: 'login' })"
-          class="mt-6 w-full py-2.5 text-slate-800 font-medium hover:underline">
+        <button
+          @click="router.push({ name: 'login' })"
+          class="mt-6 w-full py-2.5 text-slate-800 font-medium hover:underline"
+        >
           Back to login
         </button>
       </div>
@@ -59,19 +61,30 @@ const handleReset = async function () {
               <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                 <div class="i-lucide-mail w-5 h-5" />
               </span>
-              <input v-model="mail" type="email" required placeholder="you@email.com"
-                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800/20 focus:border-slate-800 outline-none transition" />
+              <input
+                v-model="mail"
+                type="email"
+                required
+                placeholder="you@email.com"
+                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800/20 focus:border-slate-800 outline-none transition"
+              />
             </div>
             <p v-if="errMsg" class="mt-2 text-xs text-red-500">{{ errMsg }}</p>
           </div>
 
-          <button type="submit" :disabled="loading"
-            class="w-full py-3 bg-slate-800 text-white rounded-lg font-semibold hover:bg-slate-700 active:scale-95 disabled:opacity-50 transition">
+          <button
+            type="submit"
+            :disabled="loading"
+            class="w-full py-3 bg-slate-800 text-white rounded-lg font-semibold hover:bg-slate-700 active:scale-95 disabled:opacity-50 transition"
+          >
             {{ loading ? 'Sending…' : 'Send instructions' }}
           </button>
 
-          <button type="button" @click="router.push({ name: 'login' })"
-            class="w-full text-sm text-gray-500 hover:text-gray-700 transition">
+          <button
+            type="button"
+            @click="router.push({ name: 'login' })"
+            class="w-full text-sm text-gray-500 hover:text-gray-700 transition"
+          >
             Cancel and go back
           </button>
         </form>
