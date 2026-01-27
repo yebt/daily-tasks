@@ -10,7 +10,7 @@ export const authRoutes: RouteRecordRaw[] = [
   {
     path: '/forgot-password',
     name: 'forgot-password',
-    component: () => import('@modules/auth/views/ForgotPassword.vue'),
+    component: () => import('@modules/auth/views/ForgotPasswordPage.vue'),
     meta: { requiresAuth: false },
   },
 ]
