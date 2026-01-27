@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.87",
+    "@iconify-json/mdi": "^1.2.3",
     "@tsconfig/node24": "^24.0.4",
     "@types/jsdom": "^27.0.0",
     "@types/node": "^24.10.9",
