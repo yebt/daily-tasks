@@ -1,6 +1,5 @@
 import { authRoutes } from '@/modules/auth/infrastructure/router/auth.routes'
 import { createRouter, createWebHistory } from 'vue-router'
-import { getCurrentUser } from 'vuefire'
 import { authGuard } from './guards/auth.guard'
 
 const router = createRouter({
