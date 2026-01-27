@@ -1,6 +1,7 @@
 import { authRoutes } from '@/modules/auth/infrastructure/router/auth.routes'
 import { createRouter, createWebHistory } from 'vue-router'
 import { getCurrentUser } from 'vuefire'
+import { authGuard } from './guards/auth.guard'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,28 +13,11 @@ const router = createRouter({
     },
 
     // Imports
-    ...authRoutes
+    ...authRoutes,
   ],
 })
 
-router.beforeEach(async (to) => {
-  // NOTE: check if auth is required
-  if (to.meta.requiresAuth) {
-    const user = await getCurrentUser()
-
-    if (!user) {
-      return {
-        name: 'login',
-        query: { redirect: to.fullPath },
-      }
-    }
-  }
-
-  // NOTE: redirect login to home
-  if (to.name === 'login') {
-    const user = await getCurrentUser()
-    if (user) return { name: 'home' }
-  }
-})
+// Guards
+router.beforeEach(authGuard)
 
 export default router

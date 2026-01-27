@@ -8,6 +8,8 @@ const router = useRouter()
 
 const mail = ref('')
 const pass = ref('')
+const rememerMe = ref(false)
+
 const loading = ref(false)
 
 const handleLogin = async function () {
@@ -34,26 +36,40 @@ const handleLogin = async function () {
       <form class="space-y-5">
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
-          <input type="email" placeholder="you@example.com"
-            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-slate-800" />
+          <input
+            type="email"
+            placeholder="you@example.com"
+            v-model="mail"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-slate-800"
+          />
         </div>
 
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
-          <input type="password" placeholder="••••••••"
-            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-slate-800" />
+          <input
+            type="password"
+            placeholder="••••••••"
+            v-model="pass"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-slate-800"
+          />
         </div>
 
         <div class="flex items-center justify-between text-sm">
           <label class="flex items-center gap-2 text-slate-600">
-            <input type="checkbox" class="rounded border-slate-300 text-slate-800 focus:ring-slate-800" />
+            <input
+              type="checkbox"
+              class="rounded border-slate-300 text-slate-800 focus:ring-slate-800"
+              v-model="rememerMe"
+            />
             Remember me
           </label>
           <a href="#" class="text-slate-800 hover:underline">Forgot password?</a>
         </div>
 
-        <button type="submit"
-          class="w-full rounded-lg bg-slate-800 text-white py-2.5 text-sm font-medium hover:bg-slate-700 transition">
+        <button
+          type="submit"
+          class="w-full rounded-lg bg-slate-800 text-white py-2.5 text-sm font-medium hover:bg-slate-700 transition"
+        >
           Sign in
         </button>
       </form>
