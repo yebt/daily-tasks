@@ -14,6 +14,7 @@ import {
 import { useAuthStore } from '@/modules/auth/stores/auth.store.ts'
 import { useConfirmModal } from '@/shared/design-system/composables/useConfirmModal'
 import ConfirmModal from '@/shared/design-system/components/ConfirmModal.vue'
+import SettingsModal from '@/modules/settings/components/SettingsModal.vue'
 
 //
 const days = Object.values(WeekDays).filter((v) => typeof v === 'string') as string[]
@@ -30,6 +31,7 @@ const openDay = ref<number>(currentDay)
 const newTaskText = ref('')
 const showAllDays = ref(false)
 const isTransferring = ref(false)
+const isSettingsOpen = ref(false)
 
 //
 // ================================================================================
@@ -135,21 +137,31 @@ watch(
       @confirm="confirmModal.handleConfirm()"
       @cancel="confirmModal.handleCancel()"
     />
+    <SettingsModal :is-open="isSettingsOpen" @close="isSettingsOpen = false" />
     <header class="mb-10 flex items-center justify-between">
       <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">My Week</h1>
 
-      <button
-        @click="showAllDays = !showAllDays"
-        class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-full border transition-all"
-        :class="
-          showAllDays
-            ? 'bg-blue-50 border-blue-200 text-blue-600'
-            : 'bg-gray-50 border-gray-200 text-gray-500'
-        "
-      >
-        <em :class="showAllDays ? 'i-lucide-eye' : 'i-lucide-eye-off'" class="w-4 h-4" />
-        {{ showAllDays ? 'Showing week' : 'Today only' }}
-      </button>
+      <div class="flex items-center gap-2">
+        <button
+          @click="isSettingsOpen = true"
+          class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-full border border-gray-200 bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
+          title="Settings"
+        >
+          <em class="i-lucide-settings w-4 h-4" />
+        </button>
+        <button
+          @click="showAllDays = !showAllDays"
+          class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-full border transition-all"
+          :class="
+            showAllDays
+              ? 'bg-blue-50 border-blue-200 text-blue-600'
+              : 'bg-gray-50 border-gray-200 text-gray-500'
+          "
+        >
+          <em :class="showAllDays ? 'i-lucide-eye' : 'i-lucide-eye-off'" class="w-4 h-4" />
+          {{ showAllDays ? 'Showing week' : 'Today only' }}
+        </button>
+      </div>
     </header>
 
     <div class="flex flex-col gap-1">
