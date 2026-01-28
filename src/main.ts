@@ -10,11 +10,12 @@ import router from '@/core/router'
 
 const app = createApp(App)
 
-app.use(createPinia())
 app.use(VueFire, {
   firebaseApp,
   modules: [VueFireAuth()],
 })
+
+app.use(createPinia())
 app.use(router)
 
 app.mount('#app')
