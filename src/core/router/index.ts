@@ -9,7 +9,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      redirect: '/todos'
+      redirect: '/todos',
       // component: () => import('@modules/todo/views/TodoPage.vue'),
     },
 

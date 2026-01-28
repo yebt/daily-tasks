@@ -81,10 +81,9 @@ const handleReset = async function () {
           </button>
 
           <RouterLink
-            :to="{name:'login'}"
+            :to="{ name: 'login' }"
             class="w-full text-sm text-gray-500 hover:text-gray-700 transition hover:underline"
           >
-
             Cancel and go back
           </RouterLink>
         </form>
