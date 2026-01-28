@@ -34,28 +34,53 @@ const confirmButtonClass = computed(() => ({
 
 <template>
   <Teleport to="body">
-    <div v-if="unref(isOpen)" class="fixed inset-0 z-50 flex items-center justify-center">
-      <!-- Backdrop -->
-      <div class="absolute inset-0 bg-black/50" @click="$emit('cancel')" />
+    <Transition name="modal">
+      <div v-if="unref(isOpen)" class="fixed inset-0 z-50 flex items-center justify-center">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/50" @click="$emit('cancel')" />
 
-      <!-- Modal -->
-      <div class="relative bg-white rounded-lg shadow-lg p-6 max-w-sm mx-4 space-y-4">
-        <div class="space-y-2">
-          <h2 class="text-lg font-bold text-gray-900">{{ unref(title) }}</h2>
-          <p class="text-sm text-gray-600">{{ unref(message) }}</p>
-        </div>
+        <!-- Modal -->
+        <div class="relative bg-white rounded-lg shadow-lg p-6 max-w-sm mx-4 space-y-4">
+          <div class="space-y-2">
+            <h2 class="text-lg font-bold text-gray-900">{{ unref(title) }}</h2>
+            <p class="text-sm text-gray-600">{{ unref(message) }}</p>
+          </div>
 
-        <div class="flex gap-3 justify-end pt-4">
-          <button @click="$emit('cancel')"
-            class="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
-            {{ unref(cancelText) }}
-          </button>
-          <button @click="$emit('confirm')" :class="confirmButtonClass"
-            class="px-4 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center gap-2">
-            {{ unref(confirmText) }}
-          </button>
+          <div class="flex gap-3 justify-end pt-4">
+            <button @click="$emit('cancel')"
+              class="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
+              {{ unref(cancelText) }}
+            </button>
+            <button @click="$emit('confirm')" :class="confirmButtonClass"
+              class="px-4 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center gap-2">
+              {{ unref(confirmText) }}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </Teleport>
 </template>
+
+<style scoped>
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-active > div:nth-child(2),
+.modal-leave-active > div:nth-child(2) {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+}
+
+.modal-enter-from > div:nth-child(2),
+.modal-leave-to > div:nth-child(2) {
+  transform: scale(0.95);
+  opacity: 0;
+}
+</style>
