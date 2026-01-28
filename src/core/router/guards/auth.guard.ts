@@ -8,10 +8,11 @@ export const authGuard = async (
 ) => {
   const user = await getCurrentUser()
 
-  const requiresAtuh = to.matched.some((record) => record.meta.requiresAtuh)
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
+
   const requiresNoAuth = to.matched.some((record) => record.meta.requiresNoAuth)
 
-  if (requiresAtuh && !user) {
+  if (requiresAuth && !user) {
     next({
       name: 'login',
       query: { redirect: to.fullPath },
