@@ -12,6 +12,8 @@ import {
   type WeekDayIndex,
 } from '../domain/todo.entity.ts'
 import { useAuthStore } from '@/modules/auth/stores/auth.store.ts'
+import { useConfirmModal } from '@/shared/design-system/composables/useConfirmModal'
+import ConfirmModal from '@/shared/design-system/components/ConfirmModal.vue'
 
 //
 const days = Object.values(WeekDays).filter((v) => typeof v === 'string') as string[]
@@ -22,6 +24,7 @@ const currentDay = new Date().getDay()
 //
 const todoStore = useTodoStore()
 const authUser = useAuthStore()
+const confirmModal = useConfirmModal()
 //
 const openDay = ref<number>(currentDay)
 const newTaskText = ref('')
@@ -78,8 +81,14 @@ const handleUpdateStatus = async (id: string, newStatus: string) => {
 }
 
 const handleDeleteTodo = async (id: string) => {
-  // Una confirmación simple ayuda a evitar errores accidentales
-  if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+  const confirmed = await confirmModal.confirm({
+    title: 'Eliminar tarea',
+    message: '¿Estás seguro de que quieres eliminar esta tarea?',
+    confirmText: 'Eliminar',
+    isDangerous: true,
+  })
+
+  if (confirmed) {
     try {
       await TodoService.deleteTodo(id)
     } catch (e) {
@@ -116,6 +125,9 @@ watch(
 
 <template>
   <div class="max-w-3xl mx-auto p-6 md:p-10">
+    <ConfirmModal :is-open="confirmModal.isOpen" :title="confirmModal.title" :message="confirmModal.message"
+      :confirm-text="confirmModal.confirmText" :cancel-text="confirmModal.cancelText"
+      :is-dangerous="confirmModal.isDangerous" @confirm="confirmModal.handleConfirm()" @cancel="confirmModal.handleCancel()" />
     <header class="mb-10 flex items-center justify-between">
       <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">Mi Semana</h1>
 
