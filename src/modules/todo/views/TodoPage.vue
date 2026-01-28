@@ -82,9 +82,9 @@ const handleUpdateStatus = async (id: string, newStatus: string) => {
 
 const handleDeleteTodo = async (id: string) => {
   const confirmed = await confirmModal.confirm({
-    title: 'Eliminar tarea',
-    message: '¿Estás seguro de que quieres eliminar esta tarea?',
-    confirmText: 'Eliminar',
+    title: 'Delete task',
+    message: 'Are you sure you want to delete this task?',
+    confirmText: 'Delete',
     isDangerous: true,
   })
 
@@ -136,7 +136,7 @@ watch(
       @cancel="confirmModal.handleCancel()"
     />
     <header class="mb-10 flex items-center justify-between">
-      <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">Mi Semana</h1>
+      <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">My Week</h1>
 
       <button
         @click="showAllDays = !showAllDays"
@@ -148,7 +148,7 @@ watch(
         "
       >
         <em :class="showAllDays ? 'i-lucide-eye' : 'i-lucide-eye-off'" class="w-4 h-4" />
-        {{ showAllDays ? 'Mostrando semana' : 'Solo hoy' }}
+        {{ showAllDays ? 'Showing week' : 'Today only' }}
       </button>
     </header>
 
@@ -201,7 +201,7 @@ watch(
                   v-model="newTaskText"
                   @keyup.enter="handleAddTodo(index)"
                   type="text"
-                  placeholder="Nueva tarea..."
+                  placeholder="New task..."
                   class="flex-1 px-4 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none transition"
                 />
               </div>
@@ -250,7 +250,7 @@ watch(
                     <button
                       @click="handleDeleteTodo(todo.id!)"
                       class="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-all"
-                      title="Eliminar tarea"
+                      title="Delete task"
                     >
                       <em class="i-lucide-trash-2 w-4 h-4" />
                     </button>
@@ -275,7 +275,7 @@ watch(
                     "
                     class="w-4 h-4"
                   />
-                  {{ isTransferring ? 'Transfiriendo...' : 'Pasar pendientes a mañana' }}
+                  {{ isTransferring ? 'Transferring...' : 'Move pending to tomorrow' }}
                 </button>
               </div>
             </div>
