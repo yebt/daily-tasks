@@ -6,7 +6,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from 'firebase/auth'
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed } from 'vue'
 import { useCurrentUser, useFirebaseAuth } from 'vuefire'
 
@@ -33,3 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
     resetPassword,
   }
 })
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
+}

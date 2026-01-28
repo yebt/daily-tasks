@@ -8,6 +8,34 @@ export enum TodoStatus {
   Cancel = 'CANCEL',
 }
 
+export const TodoStatusIcon: Record<TodoStatus, string> = {
+  [TodoStatus.Waiting]: 'i-lucide-clock',
+  [TodoStatus.Inprogress]: 'i-lucide-play',
+  [TodoStatus.Completed]: 'i-lucide-check-circle',
+  [TodoStatus.Delegated]: 'i-lucide-user-forward',
+  [TodoStatus.Appointment]: 'i-lucide-calendar',
+  [TodoStatus.Cancel]: 'i-lucide-x-circle',
+}
+
+export const TodoStatusLabel: Record<TodoStatus, string> = {
+  [TodoStatus.Waiting]: 'Esperando',
+  [TodoStatus.Inprogress]: 'En proceso',
+  [TodoStatus.Completed]: 'Completado',
+  [TodoStatus.Delegated]: 'Delegado',
+  [TodoStatus.Appointment]: 'Cita',
+  [TodoStatus.Cancel]: 'Cancelado',
+}
+
+export const TodoStatuses = Object.values(TodoStatus).map((status) => ({
+  value: status,
+  label: TodoStatusLabel[status],
+  icon: TodoStatusIcon[status],
+}))
+
+export const getTodoStatusIcon = (status: TodoStatus) => {
+  return TodoStatusIcon[status]
+}
+
 // export type TodoCategory = 'Today' | 'Next' | 'Some day'
 export enum TodoCategory {
   Today = 'TODAY',
