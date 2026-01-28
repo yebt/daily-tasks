@@ -30,15 +30,15 @@ const handleDelete = async (id: string) => {
 </script>
 
 <template>
-  <ConfirmModal 
-    :is-open="confirmModal.isOpen" 
-    :title="confirmModal.title" 
+  <ConfirmModal
+    :is-open="confirmModal.isOpen"
+    :title="confirmModal.title"
     :message="confirmModal.message"
-    :confirm-text="confirmModal.confirmText" 
+    :confirm-text="confirmModal.confirmText"
     :cancel-text="confirmModal.cancelText"
-    :is-dangerous="confirmModal.isDangerous" 
-    @confirm="confirmModal.handleConfirm()" 
-    @cancel="confirmModal.handleCancel()" 
+    :is-dangerous="confirmModal.isDangerous"
+    @confirm="confirmModal.handleConfirm()"
+    @cancel="confirmModal.handleCancel()"
   />
 </template>
 ```

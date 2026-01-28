@@ -47,12 +47,17 @@ const confirmButtonClass = computed(() => ({
           </div>
 
           <div class="flex gap-3 justify-end pt-4">
-            <button @click="$emit('cancel')"
-              class="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
+            <button
+              @click="$emit('cancel')"
+              class="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+            >
               {{ unref(cancelText) }}
             </button>
-            <button @click="$emit('confirm')" :class="confirmButtonClass"
-              class="px-4 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center gap-2">
+            <button
+              @click="$emit('confirm')"
+              :class="confirmButtonClass"
+              class="px-4 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center gap-2"
+            >
               {{ unref(confirmText) }}
             </button>
           </div>
@@ -75,7 +80,9 @@ const confirmButtonClass = computed(() => ({
 
 .modal-enter-active > div:nth-child(2),
 .modal-leave-active > div:nth-child(2) {
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.2s ease;
 }
 
 .modal-enter-from > div:nth-child(2),
