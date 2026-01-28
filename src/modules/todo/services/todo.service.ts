@@ -11,15 +11,15 @@ import {
   getDocs,
   serverTimestamp,
 } from 'firebase/firestore'
-import { TodoStatus, type Todo } from '../domain/todo.entity'
+import { TodoCategory, TodoStatus, type Todo } from '../domain/todo.entity'
 
 const COL_NAME = 'todos'
 
 export const TodoService = {
   /**
-    * CREATE: Define the missing function.
-    * Receives a Partial object or Omit to avoid forcing to send the ID.
-    */
+   * CREATE: Define the missing function.
+   * Receives a Partial object or Omit to avoid forcing to send the ID.
+   */
   async createTodo(todo: Omit<Todo, 'id' | 'createdAt' | 'updatedAt'>) {
     return addDoc(collection(db, COL_NAME), {
       ...todo,
@@ -29,8 +29,8 @@ export const TodoService = {
   },
 
   /**
-    * UPDATE: To change the status, text, or day.
-    */
+   * UPDATE: To change the status, text, or day.
+   */
   async updateTodo(id: string, updates: Partial<Todo>) {
     const todoRef = doc(db, COL_NAME, id)
     return updateDoc(todoRef, {
@@ -40,16 +40,17 @@ export const TodoService = {
   },
 
   /**
-    * DELETE: Physically deletes the document.
-    */
+   * DELETE: Physically deletes the document.
+   */
   async deleteTodo(id: string) {
     const todoRef = doc(db, COL_NAME, id)
     return deleteDoc(todoRef)
   },
 
   /**
-    * BULK OPERATION: Transfer pending tasks to the next day.
-    */
+   * BULK OPERATION: Transfer pending tasks to the next day.
+   * @deprecated The method should not be used
+   */
   async transferPendingTasks(userId: string, fromDay: number) {
     const batch = writeBatch(db)
     const nextDay = (fromDay + 1) % 7
@@ -86,5 +87,38 @@ export const TodoService = {
     if (tasksMoved > 0) {
       return batch.commit()
     }
+  },
+
+  async transferPendingTasksWB(userId: string, fromDayIndex: number) {
+    const batch = writeBatch(db)
+    const nextDayIndex = (fromDayIndex + 1) % 7 // Ciclo de 0 a 6
+
+    // Consultamos las tareas de ese día específico que pertenecen al usuario
+    const q = query(
+      collection(db, 'todos'),
+      where('userId', '==', userId),
+      where('dayOfWeek', '==', fromDayIndex),
+      where('category', '==', TodoCategory.Today),
+    )
+
+    const snapshot = await getDocs(q)
+    let count = 0
+
+    snapshot.docs.forEach((document) => {
+      const data = document.data()
+      // Solo transferimos si NO está completada ni cancelada
+      if (data.status !== TodoStatus.Completed && data.status !== TodoStatus.Cancel) {
+        batch.update(document.ref, {
+          dayOfWeek: nextDayIndex,
+          updatedAt: serverTimestamp(),
+        })
+        count++
+      }
+    })
+
+    if (count > 0) {
+      await batch.commit()
+    }
+    return count
   },
 }

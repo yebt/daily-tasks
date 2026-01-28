@@ -23,7 +23,8 @@ export const useTodoStore = defineStore('todo', () => {
 
   // 2. Sincronización en tiempo real con VueFire
   // allTodos se actualizará solo cada vez que algo cambie en la DB
-  const allTodos = useCollection<Todo>(todosQuery)
+  // const allTodos = useCollection<Todo>(todosQuery)
+  const allTodos = useCollection<Todo>(todosQuery, { ssrKey: 'todos-collection' })
 
   // 3. Getters (Computed) para filtrar por categoría y días
   // Esto alimenta directamente a los acordeones en la vista
@@ -62,6 +63,6 @@ export const useTodoStore = defineStore('todo', () => {
   }
 })
 
-if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useTodoStore, import.meta.hot))
-}
+// if (import.meta.hot) {
+//   import.meta.hot.accept(acceptHMRUpdate(useTodoStore, import.meta.hot))
+// }
