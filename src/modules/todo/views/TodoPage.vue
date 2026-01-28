@@ -1,16 +1,40 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useTodoStore } from '../store/todo.store'
+import { TodoService } from '../services/todo.service'
+import { TodoCategory, TodoStatus, WeekDays, type WeekDayIndex } from '../domain/todo.entity.ts'
+import { useAuthStore } from '@/modules/auth/stores/auth.store.ts'
 
-const todoStore = useTodoStore()
-
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+//
+const days = Object.keys(WeekDays)
 const currentDay = new Date().getDay()
 
+//
+const todoStore = useTodoStore()
+const authUser = useAuthStore()
+//
 const openDay = ref<number>(currentDay)
+const newTaskText = ref('')
 
+//
 const toggleDay = (indx: number) => {
   openDay.value = openDay.value === indx ? -1 : indx
+}
+
+const handleAddTodo = async function (dayIndex: WeekDayIndex) {
+  if (!newTaskText.value.trim()) return
+
+  if (!authUser.isAuthenticated || !authUser.user) return
+
+  try {
+    await TodoService.createTodo({
+      text: newTaskText.value.trim(),
+      status: TodoStatus.Waiting,
+      category: TodoCategory.Today,
+      dayOfWeek: dayIndex,
+      userId: authUser.user.uid,
+    })
+  } catch (e) {}
 }
 </script>
 
@@ -22,12 +46,17 @@ const toggleDay = (indx: number) => {
     </header>
 
     <section class="space-y-2">
-      <div v-for="(day, index) in days" :key="day" class="border rounded-lg bg-white overflow-hidden">
-
+      <div
+        v-for="(day, index) in days"
+        :key="day"
+        class="border rounded-lg bg-white overflow-hidden"
+      >
         <!--  -->
-        <button @click="toggleDay(index)"
+        <button
+          @click="toggleDay(index)"
           class="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition"
-          :class="{ 'bg-blue-50/50': index === currentDay }">
+          :class="{ 'bg-blue-50/50': index === currentDay }"
+        >
           <div class="flex items-center gap-3">
             <span :class="index === currentDay ? 'text-blue-600 font-bold' : 'text-gray-600'">
               {{ day }}
@@ -37,8 +66,10 @@ const toggleDay = (indx: number) => {
             </span>
           </div>
 
-          <div class="i-lucide-chevron-down transition-transform"
-            :class="{ 'rotate-180 text-blue-600': openDay === index }" />
+          <div
+            class="i-lucide-chevron-down transition-transform"
+            :class="{ 'rotate-180 text-blue-600': openDay === index }"
+          />
         </button>
 
         <div v-if="openDay === index" class="p-4 border-t bg-gray-50/30">
