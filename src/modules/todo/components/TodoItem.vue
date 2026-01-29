@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getTodoStatusIcon, TodoStatus, TodoStatuses, type Todo } from '../domain/todo.entity'
+import {  motion } from 'motion-v'
 
 interface Props {
   todo: Todo
@@ -46,6 +47,16 @@ const classesTodoStatus: Record<TodoStatus, string> = {
 </script>
 
 <template>
+  <motion.div
+    drag
+    dragDirectionLock
+    :dragConstraints="{ top: 0, bottom: 0, left: 0, right: 0 }"
+    :dragTransition="{ bounceStiffness: 300, bounceDamping: 20 }"
+    :dragElastic="0.1"
+    :whileDrag="{ cursor: 'grabbing', scale: 1.03 }"
+    class="relative"
+  >
+
   <div
     class="flex items-center gap-3 p-2 rounded-md group transition-all hover:( outline-gray-900/20 ) outline-1 -outline-offset-1- outline-dashed outline-transparent"
     :class="[classesTodoStatus[todo.status]]"
@@ -84,4 +95,6 @@ const classesTodoStatus: Record<TodoStatus, string> = {
       <em class="i-lucide-trash-2 w-4 h-4" />
     </button>
   </div>
+
+  </motion.div>
 </template>

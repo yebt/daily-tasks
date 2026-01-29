@@ -19,6 +19,7 @@
   "dependencies": {
     "@sentry/vue": "^10.37.0",
     "firebase": "^12.8.0",
+    "motion-v": "^1.10.2",
     "pinia": "^3.0.4",
     "uuid": "^13.0.0",
     "vue": "^3.5.26",
