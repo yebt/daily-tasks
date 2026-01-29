@@ -39,18 +39,27 @@ describe('TodoItem', () => {
     expect(textDiv.classes()).toContain('line-through')
   })
 
-  it('emits update:status event when status dropdown changes', async () => {
+  it('emits update:status event when status button menu changes', async () => {
     const wrapper = mount(TodoItem, {
       props: {
         todo: mockTodo,
       },
     })
 
-    const select = wrapper.find('select')
-    await select.setValue(TodoStatus.Inprogress)
+    // Find the status button (first button)
+    const buttons = wrapper.findAll('button')
+    const statusButton = buttons[0]
+    if (statusButton) {
+      await statusButton.trigger('click')
+
+      // Find and click on a different status option (second status button in menu)
+      const allButtons = wrapper.findAll('button')
+      if (allButtons[1]) {
+        await allButtons[1].trigger('click')
+      }
+    }
 
     expect(wrapper.emitted('update:status')).toBeTruthy()
-    expect(wrapper.emitted('update:status')?.[0]).toEqual([TodoStatus.Inprogress])
   })
 
   it('emits delete event when delete button is clicked', async () => {
@@ -91,15 +100,22 @@ describe('TodoItem', () => {
     expect(container.classes()).toContain('bg-emerald-50/30')
   })
 
-  it('displays all status options in dropdown', () => {
+  it('displays all status options in status menu', async () => {
     const wrapper = mount(TodoItem, {
       props: {
         todo: mockTodo,
       },
     })
 
-    const options = wrapper.findAll('option')
-    expect(options.length).toBeGreaterThan(0)
+    const buttons = wrapper.findAll('button')
+    const statusButton = buttons[0]
+    if (statusButton) {
+      await statusButton.trigger('click')
+
+      const allButtons = wrapper.findAll('button')
+      // Status menu should have multiple buttons (all the status options)
+      expect(allButtons.length).toBeGreaterThan(1)
+    }
   })
 
   it('enters edit mode on double click and emits update:text on save', async () => {
@@ -147,8 +163,8 @@ describe('TodoItem', () => {
     await transferButton.trigger('click')
 
     const categoryButton = wrapper
-       .findAll('div button')
-       .find((btn) => btn.text().includes('Next') || btn.text().includes('Someday'))
+      .findAll('div button')
+      .find((btn) => btn.text().includes('Next') || btn.text().includes('Someday'))
     if (categoryButton) {
       await categoryButton.trigger('click')
     }

@@ -24,6 +24,7 @@ const emit = defineEmits<{
 const isEditing = ref(false)
 const editedText = ref(props.todo.text)
 const showCategoryMenu = ref(false)
+const showStatusMenu = ref(false)
 const inputRef = ref<HTMLInputElement>()
 const containerRef = ref<HTMLDivElement>()
 
@@ -33,6 +34,7 @@ const getStatusIcon = (statusValue: TodoStatus): string => {
 
 const handleStatusChange = (newStatus: string) => {
   emit('update:status', newStatus)
+  showStatusMenu.value = false
 }
 
 const handleDelete = () => {
@@ -79,6 +81,7 @@ const handleTransferCategory = (newCategory: TodoCategory) => {
 
 const handleContainerMouseLeave = () => {
   showCategoryMenu.value = false
+  showStatusMenu.value = false
 }
 
 const isTransferable = computed(() => {
@@ -118,24 +121,45 @@ const getCategoryLabel = (category: TodoCategory): string => {
 <template>
   <div
     ref="containerRef"
-    class="flex items-center gap-3 p-2 rounded-md group transition-all hover:( outline-gray-900/20 ) outline-1 -outline-offset-1- outline-dashed outline-transparent"
-    :class="[classesTodoStatus[todo.status]]"
+    :class="[
+      classesTodoStatus[todo.status],
+      isEditing
+        ? 'bg-white shadow-md ring-2 ring-blue-400/30'
+        : 'hover:( outline-gray-900/20 ) outline-1 -outline-offset-1- outline-dashed outline-transparent',
+    ]"
+    class="flex items-center gap-3 p-2 rounded-md group transition-all"
     @mouseleave="handleContainerMouseLeave"
   >
-    <div class="relative w-5 h-5 flex items-center justify-center">
-      <em
-        :class="[getStatusIcon(todo.status), classesTodoStatusIcon[todo.status]]"
-        class="w-4 h-4 group-hover:text-blue-500 drop-shadow transition"
-      />
-      <select
-        :value="todo.status"
-        @change="(e) => handleStatusChange((e.target as HTMLSelectElement).value)"
-        class="absolute inset-0 opacity-0 cursor-pointer"
+    <div class="relative flex items-center justify-center">
+      <button
+        @click="showStatusMenu = !showStatusMenu"
+        class="relative flex items-center justify-center w-6 h-6 rounded transition-all hover:bg-gray-100/50"
+        :title="`Status: ${statuses.find((s) => s.value === todo.status)?.label}`"
       >
-        <option v-for="s in statuses" :key="s.value" :value="s.value">
-          {{ s.label }}
-        </option>
-      </select>
+        <em
+          :class="[getStatusIcon(todo.status), classesTodoStatusIcon[todo.status]]"
+          class="w-4 h-4 group-hover:text-blue-500 drop-shadow transition"
+        />
+      </button>
+
+      <div
+        v-if="showStatusMenu"
+        class="absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-max"
+      >
+        <button
+          v-for="status in statuses"
+          :key="status.value"
+          @click="handleStatusChange(status.value)"
+          class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm hover:bg-blue-50 transition-colors first:rounded-t-md last:rounded-b-md"
+          :class="{ 'bg-blue-100/50': status.value === todo.status }"
+        >
+          <em
+            :class="[status.icon, classesTodoStatusIcon[status.value as TodoStatus]]"
+            class="w-4 h-4"
+          />
+          <span>{{ status.label }}</span>
+        </button>
+      </div>
     </div>
 
     <div
@@ -158,7 +182,7 @@ const getCategoryLabel = (category: TodoCategory): string => {
       @blur="handleEditSave"
       @keydown="handleKeydown"
       type="text"
-      class="flex-1 text-sm bg-transparent outline-none"
+      class="flex-1 text-sm bg-transparent outline-none py-0.5"
       :class="{
         'line-through text-slate-400 font-normal':
           todo.status === TodoStatus.Cancel || todo.status === TodoStatus.Completed,
