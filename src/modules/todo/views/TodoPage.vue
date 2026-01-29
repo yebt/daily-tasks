@@ -250,7 +250,7 @@ watch(
                     </div>
 
                     <span
-                      class="text-sm flex-1"
+                      class="text-sm flex-1 select-none "
                       :class="{
                         'line-through text-slate-400 font-normal':
                           todo.status === TodoStatus.Cancel || todo.status === TodoStatus.Completed,
