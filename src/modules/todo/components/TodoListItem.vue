@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { getTodoStatusIcon, TodoStatus, type Todo } from '../domain/todo.entity'
 
 interface Props {
   todo: Todo
   selected?: boolean
+  currentCategory?: 'TODAY' | 'NEXT' | 'SOME DAY'
 }
 
 const props = defineProps<Props>()
@@ -13,7 +14,11 @@ const emit = defineEmits<{
   'update:status': [status: string]
   delete: []
   'toggle:select': []
+  transfer: [category: 'TODAY' | 'NEXT' | 'SOME DAY']
 }>()
+
+const isTransferMenuOpen = ref(false)
+const transferMenuPositionTop = ref(true)
 
 const getStatusIcon = (statusValue: TodoStatus): string => {
   return getTodoStatusIcon(statusValue)
@@ -29,6 +34,39 @@ const handleDelete = () => {
 
 const handleToggleSelect = () => {
   emit('toggle:select')
+}
+
+const openTransferMenu = (event: MouseEvent) => {
+  const button = event.currentTarget as HTMLElement
+  const buttonRect = button.getBoundingClientRect()
+  const windowHeight = window.innerHeight
+  const menuHeight = 130 // Approximate height of transfer menu
+
+  transferMenuPositionTop.value = buttonRect.bottom + menuHeight + 10 < windowHeight
+  isTransferMenuOpen.value = true
+}
+
+const closeTransferMenu = () => {
+  isTransferMenuOpen.value = false
+}
+
+const handleTransfer = (category: 'TODAY' | 'NEXT' | 'SOME DAY') => {
+  emit('transfer', category)
+  closeTransferMenu()
+}
+
+const getTransferOptions = (): Array<{
+  label: string
+  value: 'TODAY' | 'NEXT' | 'SOME DAY'
+  icon: string
+}> => {
+  const allOptions = [
+    { label: 'Today', value: 'TODAY' as const, icon: 'i-lucide-calendar-today' },
+    { label: 'Next', value: 'NEXT' as const, icon: 'i-lucide-clock' },
+    { label: 'Someday', value: 'SOME DAY' as const, icon: 'i-lucide-lightbulb' },
+  ]
+  // Filter out current category
+  return allOptions.filter((opt) => opt.value !== props.currentCategory)
 }
 
 const classesTodoStatusIcon: Record<TodoStatus, string> = {
@@ -98,6 +136,38 @@ const formattedDate = computed(() => {
     </span>
 
     <span class="text-xs text-gray-400 whitespace-nowrap">{{ formattedDate }}</span>
+
+    <!-- Transfer Menu Button -->
+    <div class="relative">
+      <button
+        v-if="getTransferOptions().length > 0"
+        @click="openTransferMenu"
+        class="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded transition-all flex"
+        title="Move to another category"
+      >
+        <em class="i-lucide-arrow-right w-4 h-4" />
+      </button>
+
+      <!-- Transfer Menu Dropdown -->
+      <div
+        v-if="isTransferMenuOpen"
+        @mouseleave="closeTransferMenu"
+        :class="[
+          transferMenuPositionTop ? 'top-full mt-1' : 'bottom-full mb-1',
+          'absolute right-0 min-w-40 bg-white border border-gray-200 rounded-md shadow-lg z-50',
+        ]"
+      >
+        <button
+          v-for="option in getTransferOptions()"
+          :key="option.value"
+          @click="() => handleTransfer(option.value)"
+          class="w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 first:rounded-t-md last:rounded-b-md transition-colors"
+        >
+          <em :class="option.icon" class="w-4 h-4 text-gray-500" />
+          <span>{{ option.label }}</span>
+        </button>
+      </div>
+    </div>
 
     <button
       @click="handleDelete"

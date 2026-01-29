@@ -13,6 +13,7 @@ import { useAuthStore } from '@/modules/auth/stores/auth.store.ts'
 import { useConfirmModal } from '@/shared/design-system/composables/useConfirmModal'
 import ConfirmModal from '@/shared/design-system/components/ConfirmModal.vue'
 import SettingsModal from '@/modules/settings/components/SettingsModal.vue'
+import TodoHeader from '../components/TodoHeader.vue'
 import TodoItem from '../components/TodoItem.vue'
 
 //
@@ -133,7 +134,15 @@ watch(
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto p-6 md:p-10">
+  <div class="pb-10">
+    <TodoHeader
+      title="Today"
+      :show-all-days-toggle="true"
+      :all-days-enabled="showAllDays"
+      :task-count="todoStore.todayTodos.length"
+      @toggle-all-days="showAllDays = !showAllDays"
+      @open-settings="isSettingsOpen = true"
+    />
     <ConfirmModal
       :is-open="confirmModal.isOpen"
       :title="confirmModal.title"
@@ -145,124 +154,100 @@ watch(
       @cancel="confirmModal.handleCancel()"
     />
     <SettingsModal :is-open="isSettingsOpen" @close="isSettingsOpen = false" />
-    <header class="mb-10 flex items-center justify-between">
-      <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">My Week</h1>
-
-      <div class="flex items-center gap-2">
-        <button
-          @click="isSettingsOpen = true"
-          class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-full border border-gray-200 bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
-          title="Settings"
-        >
-          <em class="i-lucide-settings w-4 h-4" />
-        </button>
-        <button
-          @click="showAllDays = !showAllDays"
-          class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-full border transition-all"
-          :class="
-            showAllDays
-              ? 'bg-blue-50 border-blue-200 text-blue-600'
-              : 'bg-gray-50 border-gray-200 text-gray-500'
-          "
-        >
-          <em :class="showAllDays ? 'i-lucide-eye' : 'i-lucide-eye-off'" class="w-4 h-4" />
-          {{ showAllDays ? 'Showing week' : 'Today only' }}
-        </button>
-      </div>
-    </header>
-
-    <div class="flex flex-col gap-1">
-      <TransitionGroup name="list">
-        <template v-for="(day, index) in days" :key="day">
-          <section v-if="index === currentDay || showAllDays" class="transition-all duration-200">
-            <Transition name="list">
-              <button
-                @click="toggleDay(index)"
-                v-if="showAllDays"
-                class="w-full flex items-center justify-between py-3 px-4 rounded-lg transition-all"
-                :class="[
-                  openDay === index
-                    ? 'bg-white shadow-sm border border-gray-100 ring-1 ring-black/5 opacity-100'
-                    : 'opacity-50 hover:opacity-80 border-transparent bg-transparent shadow-none',
-                ]"
-              >
-                <div class="flex items-center gap-4">
-                  <span
-                    :class="[
-                      index === currentDay
-                        ? 'text-blue-600 font-bold'
-                        : 'text-gray-700 font-medium',
-                      'text-sm',
-                    ]"
-                  >
-                    {{ day }}
-                  </span>
-                  <span
-                    v-if="todoStore.getTodosByDay(index).length > 0"
-                    class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold"
-                  >
-                    {{ todoStore.getTodosByDay(index).length }}
-                  </span>
-                </div>
-                <em
-                  class="i-lucide-chevron-down w-4 h-4 transition-transform text-gray-400"
-                  :class="{ 'rotate-180 text-blue-600': openDay === index }"
-                />
-              </button>
-            </Transition>
-
-            <div
-              v-if="openDay === index"
-              class="mt-2 mb-4 px-4 py-4 bg-white/50 rounded-b-lg space-y-4"
-            >
-              <div class="flex gap-2">
-                <input
-                  v-model="newTaskText"
-                  @keyup.enter="handleAddTodo(index)"
-                  type="text"
-                  placeholder="New task..."
-                  class="flex-1 px-4 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none transition"
-                />
-              </div>
-
-              <div class="space-y-1">
-                <TransitionGroup name="vt-fade">
-                  <TodoItem
-                    v-for="todo in sortTodos(todoStore.getTodosByDay(index))"
-                    :key="todo.id"
-                    :todo="todo"
-                    @update:status="(status) => handleUpdateStatus(todo.id!, status)"
-                    @update:text="(text) => handleUpdateText(todo.id!, text)"
-                    @update:category="(category) => handleUpdateCategory(todo.id!, category)"
-                    @delete="handleDeleteTodo(todo.id!)"
+    <div class="max-w-3xl mx-auto p-2 md:px-10">
+      <div class="flex flex-col gap-1">
+        <TransitionGroup name="list">
+          <template v-for="(day, index) in days" :key="day">
+            <section v-if="index === currentDay || showAllDays" class="transition-all duration-200">
+              <Transition name="list">
+                <button
+                  @click="toggleDay(index)"
+                  v-if="showAllDays"
+                  class="w-full flex items-center justify-between py-3 px-4 rounded-lg transition-all"
+                  :class="[
+                    openDay === index
+                      ? 'bg-white shadow-sm border border-gray-100 ring-1 ring-black/5 opacity-100'
+                      : 'opacity-50 hover:opacity-80 border-transparent bg-transparent shadow-none',
+                  ]"
+                >
+                  <div class="flex items-center gap-4">
+                    <span
+                      :class="[
+                        index === currentDay
+                          ? 'text-blue-600 font-bold'
+                          : 'text-gray-700 font-medium',
+                        'text-sm',
+                      ]"
+                    >
+                      {{ day }}
+                    </span>
+                    <span
+                      v-if="todoStore.getTodosByDay(index).length > 0"
+                      class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold"
+                    >
+                      {{ todoStore.getTodosByDay(index).length }}
+                    </span>
+                  </div>
+                  <em
+                    class="i-lucide-chevron-down w-4 h-4 transition-transform text-gray-400"
+                    :class="{ 'rotate-180 text-blue-600': openDay === index }"
                   />
-                </TransitionGroup>
-              </div>
+                </button>
+              </Transition>
 
               <div
-                v-if="todoStore.getTodosByDay(index).length > 0 && showAllDays"
-                class="mt-6 pt-4 border-t border-gray-100 flex justify-end"
+                v-if="openDay === index"
+                class="mt-2 mb-4 px-4 py-4 bg-white/50 rounded-b-lg space-y-4"
               >
-                <button
-                  @click="handleTransfer(index)"
-                  :disabled="isTransferring"
-                  class="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all bg-amber-50 text-amber-700 hover:bg-amber-100 disabled:opacity-50"
-                >
-                  <em
-                    :class="
-                      isTransferring
-                        ? 'i-lucide-loader-2 animate-spin'
-                        : 'i-lucide-arrow-right-to-line'
-                    "
-                    class="w-4 h-4"
+                <div class="flex gap-2">
+                  <input
+                    v-model="newTaskText"
+                    @keyup.enter="handleAddTodo(index)"
+                    type="text"
+                    placeholder="New task..."
+                    class="flex-1 px-4 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none transition"
                   />
-                  {{ isTransferring ? 'Transferring...' : 'Move pending to tomorrow' }}
-                </button>
+                </div>
+
+                <div class="space-y-1">
+                  <TransitionGroup name="vt-fade">
+                    <TodoItem
+                      v-for="todo in sortTodos(todoStore.getTodosByDay(index))"
+                      :key="todo.id"
+                      :todo="todo"
+                      @update:status="(status) => handleUpdateStatus(todo.id!, status)"
+                      @update:text="(text) => handleUpdateText(todo.id!, text)"
+                      @update:category="(category) => handleUpdateCategory(todo.id!, category)"
+                      @delete="handleDeleteTodo(todo.id!)"
+                    />
+                  </TransitionGroup>
+                </div>
+
+                <div
+                  v-if="todoStore.getTodosByDay(index).length > 0 && showAllDays"
+                  class="mt-6 pt-4 border-t border-gray-100 flex justify-end"
+                >
+                  <button
+                    @click="handleTransfer(index)"
+                    :disabled="isTransferring"
+                    class="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all bg-amber-50 text-amber-700 hover:bg-amber-100 disabled:opacity-50"
+                  >
+                    <em
+                      :class="
+                        isTransferring
+                          ? 'i-lucide-loader-2 animate-spin'
+                          : 'i-lucide-arrow-right-to-line'
+                      "
+                      class="w-4 h-4"
+                    />
+                    {{ isTransferring ? 'Transferring...' : 'Move pending to tomorrow' }}
+                  </button>
+                </div>
               </div>
-            </div>
-          </section>
-        </template>
-      </TransitionGroup>
+            </section>
+          </template>
+        </TransitionGroup>
+      </div>
     </div>
   </div>
 </template>

@@ -5,6 +5,8 @@ import { TodoService } from '../services/todo.service'
 import { TodoCategory, TodoStatus } from '../domain/todo.entity'
 import { useConfirmModal } from '@/shared/design-system/composables/useConfirmModal'
 import ConfirmModal from '@/shared/design-system/components/ConfirmModal.vue'
+import SettingsModal from '@/modules/settings/components/SettingsModal.vue'
+import TodoHeader from '../components/TodoHeader.vue'
 import TodoListItem from '../components/TodoListItem.vue'
 
 const todoStore = useTodoStore()
@@ -13,6 +15,7 @@ const confirmModal = useConfirmModal()
 const selectedIds = ref<Set<string>>(new Set())
 const isTransferring = ref(false)
 const isDeleting = ref(false)
+const isSettingsOpen = ref(false)
 
 const nextTodos = computed(() => {
   return [...todoStore.nextTodos].sort((a, b) => b.createdAt - a.createdAt)
@@ -56,6 +59,20 @@ const handleDeleteTodo = async (id: string) => {
     } catch (e) {
       console.error('Error deleting todo:', e)
     }
+  }
+}
+
+const handleTransferTodo = async (id: string, category: 'TODAY' | 'NEXT' | 'SOME DAY') => {
+  const categoryMap = {
+    TODAY: TodoCategory.Today,
+    NEXT: TodoCategory.Next,
+    'SOME DAY': TodoCategory.SomeDay,
+  }
+
+  try {
+    await TodoService.transferTodosBatch([id], categoryMap[category])
+  } catch (e) {
+    console.error('Error transferring todo:', e)
   }
 }
 
@@ -106,7 +123,12 @@ const handleDeleteSelected = async () => {
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto p-6 md:p-10">
+  <div class="pb-10">
+    <TodoHeader
+      title="Next"
+      :task-count="nextTodos.length"
+      @open-settings="isSettingsOpen = true"
+    />
     <ConfirmModal
       :is-open="confirmModal.isOpen"
       :title="confirmModal.title"
@@ -117,72 +139,72 @@ const handleDeleteSelected = async () => {
       @confirm="confirmModal.handleConfirm()"
       @cancel="confirmModal.handleCancel()"
     />
+    <SettingsModal :is-open="isSettingsOpen" @close="isSettingsOpen = false" />
 
-    <header class="mb-10">
-      <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">Next</h1>
-      <p class="text-sm text-gray-500 mt-2">{{ nextTodos.length }} task(s)</p>
-    </header>
-
-    <div v-if="nextTodos.length > 0" class="space-y-4">
-      <div
-        v-if="selectedIds.size > 0"
-        class="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg sticky top-0 z-10"
-      >
-        <input
-          v-model="selectAll"
-          type="checkbox"
-          class="w-4 h-4 rounded cursor-pointer accent-blue-500"
-        />
-        <span class="text-sm font-medium text-gray-700">{{ selectedIds.size }} selected</span>
-
-        <div class="flex-1" />
-
-        <button
-          @click="handleTransferSelected(TodoCategory.Today)"
-          :disabled="isTransferring"
-          class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all bg-blue-100 text-blue-700 hover:bg-blue-200 disabled:opacity-50"
+    <div class="max-w-3xl mx-auto p-6 md:p-10">
+      <div v-if="nextTodos.length > 0" class="space-y-4">
+        <div
+          v-if="selectedIds.size > 0"
+          class="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg sticky top-0 z-10"
         >
-          <em class="i-lucide-arrow-right w-4 h-4" />
-          Move to Today
-        </button>
-
-        <button
-          @click="handleTransferSelected(TodoCategory.SomeDay)"
-          :disabled="isTransferring"
-          class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all bg-amber-100 text-amber-700 hover:bg-amber-200 disabled:opacity-50"
-        >
-          <em class="i-lucide-arrow-right w-4 h-4" />
-          Move to Someday
-        </button>
-
-        <button
-          @click="handleDeleteSelected"
-          :disabled="isDeleting"
-          class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all bg-red-100 text-red-700 hover:bg-red-200 disabled:opacity-50"
-        >
-          <em class="i-lucide-trash-2 w-4 h-4" />
-          Delete
-        </button>
-      </div>
-
-      <div class="space-y-2">
-        <TransitionGroup name="list">
-          <TodoListItem
-            v-for="todo in nextTodos"
-            :key="todo.id"
-            :todo="todo"
-            :selected="selectedIds.has(todo.id!)"
-            @toggle:select="toggleTodoSelect(todo.id!)"
-            @update:status="(status) => handleUpdateStatus(todo.id!, status)"
-            @delete="handleDeleteTodo(todo.id!)"
+          <input
+            v-model="selectAll"
+            type="checkbox"
+            class="w-4 h-4 rounded cursor-pointer accent-blue-500"
           />
-        </TransitionGroup>
-      </div>
-    </div>
+          <span class="text-sm font-medium text-gray-700">{{ selectedIds.size }} selected</span>
 
-    <div v-else class="text-center py-12">
-      <em class="i-lucide-inbox w-12 h-12 mx-auto text-gray-300 mb-4 block" />
-      <p class="text-gray-500">No tasks yet. Create one to get started!</p>
+          <div class="flex-1" />
+
+          <button
+            @click="handleTransferSelected(TodoCategory.Today)"
+            :disabled="isTransferring"
+            class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all bg-blue-100 text-blue-700 hover:bg-blue-200 disabled:opacity-50"
+          >
+            <em class="i-lucide-arrow-right w-4 h-4" />
+            Move to Today
+          </button>
+
+          <button
+            @click="handleTransferSelected(TodoCategory.SomeDay)"
+            :disabled="isTransferring"
+            class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all bg-amber-100 text-amber-700 hover:bg-amber-200 disabled:opacity-50"
+          >
+            <em class="i-lucide-arrow-right w-4 h-4" />
+            Move to Someday
+          </button>
+
+          <button
+            @click="handleDeleteSelected"
+            :disabled="isDeleting"
+            class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all bg-red-100 text-red-700 hover:bg-red-200 disabled:opacity-50"
+          >
+            <em class="i-lucide-trash-2 w-4 h-4" />
+            Delete
+          </button>
+        </div>
+
+        <div class="space-y-2">
+          <TransitionGroup name="list">
+            <TodoListItem
+              v-for="todo in nextTodos"
+              :key="todo.id"
+              :todo="todo"
+              :selected="selectedIds.has(todo.id!)"
+              current-category="NEXT"
+              @toggle:select="toggleTodoSelect(todo.id!)"
+              @update:status="(status) => handleUpdateStatus(todo.id!, status)"
+              @delete="handleDeleteTodo(todo.id!)"
+              @transfer="(category) => handleTransferTodo(todo.id!, category)"
+            />
+          </TransitionGroup>
+        </div>
+      </div>
+
+      <div v-else class="text-center py-12">
+        <em class="i-lucide-inbox w-12 h-12 mx-auto text-gray-300 mb-4 block" />
+        <p class="text-gray-500">No tasks yet. Create one to get started!</p>
+      </div>
     </div>
   </div>
 </template>
