@@ -23,12 +23,12 @@ export const TodoStatusIcon: Record<TodoStatus, string> = {
 }
 
 export const TodoStatusLabel: Record<TodoStatus, string> = {
-  [TodoStatus.Waiting]: 'Esperando',
-  [TodoStatus.Inprogress]: 'En proceso',
-  [TodoStatus.Completed]: 'Completado',
-  [TodoStatus.Delegated]: 'Delegado',
-  [TodoStatus.Appointment]: 'Cita',
-  [TodoStatus.Cancel]: 'Cancelado',
+  [TodoStatus.Waiting]: 'Waiting',
+  [TodoStatus.Inprogress]: 'In Progress',
+  [TodoStatus.Completed]: 'Completed',
+  [TodoStatus.Delegated]: 'Delegated',
+  [TodoStatus.Appointment]: 'Appointment',
+  [TodoStatus.Cancel]: 'Canceled',
 }
 
 export const TodoStatuses = Object.values(TodoStatus).map((status) => ({
@@ -65,8 +65,8 @@ export interface Todo {
   text: string
   status: TodoStatus
   category: TodoCategory
-  // dayOfWeek?: number // 0-6 (Domingo-Sábado) para los acordeones de "Today"
-  dayOfWeek?: WeekDayIndex // 0-6 (Domingo-Sábado) para los acordeones de "Today
+  // dayOfWeek?: number // 0-6 (Sunday-Saturday) for "Today" accordions
+   dayOfWeek?: WeekDayIndex // 0-6 (Sunday-Saturday) for "Today" accordions
   userId: string
   createdAt: number
   updatedAt: number

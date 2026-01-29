@@ -20,7 +20,7 @@ const handleReset = async function () {
     await authStore.resetPassword(mail.value)
     sent.value = true
   } catch (error) {
-    errMsg.value = "Mail don't send. Verify the email direction"
+    errMsg.value = "Email could not be sent. Please verify your email address."
     console.error(error)
   } finally {
     loading.value = false

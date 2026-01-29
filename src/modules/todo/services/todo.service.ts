@@ -91,9 +91,9 @@ export const TodoService = {
 
   async transferPendingTasksWB(userId: string, fromDayIndex: number) {
     const batch = writeBatch(db)
-    const nextDayIndex = (fromDayIndex + 1) % 7 // Ciclo de 0 a 6
+    const nextDayIndex = (fromDayIndex + 1) % 7 // Cycle 0 to 6
 
-    // Consultamos las tareas de ese día específico que pertenecen al usuario
+    // Query tasks from that specific day that belong to the user
     const q = query(
       collection(db, 'todos'),
       where('userId', '==', userId),
@@ -106,7 +106,7 @@ export const TodoService = {
 
     snapshot.docs.forEach((document) => {
       const data = document.data()
-      // Solo transferimos si NO está completada ni cancelada
+      // Only transfer if NOT completed or canceled
       if (data.status !== TodoStatus.Completed && data.status !== TodoStatus.Cancel) {
         batch.update(document.ref, {
           dayOfWeek: nextDayIndex,

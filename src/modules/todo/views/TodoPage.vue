@@ -76,13 +76,21 @@ const handleUpdateStatus = async (id: string, newStatus: string) => {
   await TodoService.updateTodo(id, { status: newTodoStatus })
 }
 
+const handleUpdateText = async (id: string, newText: string) => {
+  await TodoService.updateTodo(id, { text: newText })
+}
+
+const handleUpdateCategory = async (id: string, newCategory: TodoCategory) => {
+  await TodoService.updateTodo(id, { category: newCategory })
+}
+
 const handleDeleteTodo = async (id: string) => {
-  const confirmed = await confirmModal.confirm({
-    title: 'Delete task',
-    message: 'Are you sure you want to delete this task?',
-    confirmText: 'Delete',
-    isDangerous: true,
-  })
+   const confirmed = await confirmModal.confirm({
+     title: 'Delete Task',
+     message: 'Are you sure you want to delete this task?',
+     confirmText: 'Delete',
+     isDangerous: true,
+   })
 
   if (confirmed) {
     try {
@@ -219,6 +227,8 @@ watch(
                     :key="todo.id"
                     :todo="todo"
                     @update:status="(status) => handleUpdateStatus(todo.id!, status)"
+                    @update:text="(text) => handleUpdateText(todo.id!, text)"
+                    @update:category="(category) => handleUpdateCategory(todo.id!, category)"
                     @delete="handleDeleteTodo(todo.id!)"
                   />
                 </TransitionGroup>

@@ -9,25 +9,25 @@ export const useTodoStore = defineStore('todo', () => {
   const db = useFirestore()
   const authStore = useAuthStore()
 
-  // 1. Referencia reactiva a la colección filtrada por el usuario actual
-  // Usamos un query para no traer tareas de otros usuarios
+  // 1. Reactive reference to the collection filtered by the current user
+  // We use a query to avoid fetching tasks from other users
   const todosQuery = computed(() => {
     if (!authStore.user?.uid) return null
 
     return query(
       collection(db, 'todos'),
       where('userId', '==', authStore.user.uid),
-      orderBy('createdAt', 'desc'), // Para que las nuevas aparezcan arriba o abajo según prefieras
+      orderBy('createdAt', 'desc'), // So new ones appear at the top or bottom as you prefer
     )
   })
 
-  // 2. Sincronización en tiempo real con VueFire
-  // allTodos se actualizará solo cada vez que algo cambie en la DB
+  // 2. Real-time synchronization with VueFire
+  // allTodos will update only when something changes in the DB
   // const allTodos = useCollection<Todo>(todosQuery)
   const allTodos = useCollection<Todo>(todosQuery, { ssrKey: 'todos-collection' })
 
-  // 3. Getters (Computed) para filtrar por categoría y días
-  // Esto alimenta directamente a los acordeones en la vista
+  // 3. Getters (Computed) to filter by category and days
+  // This feeds directly to the accordions in the view
   const todayTodos = computed(() =>
     allTodos.value.filter((t) => {
       return t.category === TodoCategory.Today
@@ -41,8 +41,8 @@ export const useTodoStore = defineStore('todo', () => {
   )
 
   /**
-   * Helper para obtener las tareas de un día específico de la semana (0-6)
-   * Se usa en el v-for de los acordeones en TodoPage.vue
+   * Helper to get tasks from a specific day of the week (0-6)
+   * Used in the v-for of the accordions in TodoPage.vue
    */
   // const getTodosByDay = (dayIndex: number) => {
   //   return todayTodos.value.filter((t) => t.dayOfWeek === dayIndex)
@@ -58,7 +58,7 @@ export const useTodoStore = defineStore('todo', () => {
     nextTodos,
     someDayTodos,
     getTodosByDay,
-    // Exponemos el auth para que el componente pueda acceder fácilmente si lo necesita
+    // Expose auth so the component can easily access it if needed
     auth: authStore,
   }
 })

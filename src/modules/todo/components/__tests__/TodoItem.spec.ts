@@ -34,9 +34,9 @@ describe('TodoItem', () => {
       },
     })
 
-    const span = wrapper.find('span')
-    expect(span.classes()).toContain('text-emerald-700/70')
-    expect(span.classes()).toContain('line-through')
+    const textDiv = wrapper.find('div[class*="flex-1"]')
+    expect(textDiv.classes()).toContain('text-emerald-700/70')
+    expect(textDiv.classes()).toContain('line-through')
   })
 
   it('emits update:status event when status dropdown changes', async () => {
@@ -60,25 +60,11 @@ describe('TodoItem', () => {
       },
     })
 
-    const deleteButton = wrapper.find('[data-testid="delete-button"]')
+    const deleteButton = wrapper.find('button[title="Delete task"]')
     await deleteButton.trigger('click')
 
     expect(wrapper.emitted('delete')).toBeTruthy()
     expect(wrapper.emitted('delete')).toHaveLength(1)
-  })
-
-  it('emits edit event when edit button is clicked', async () => {
-    const wrapper = mount(TodoItem, {
-      props: {
-        todo: mockTodo,
-      },
-    })
-
-    const editButton = wrapper.find('[data-testid="edit-button"]')
-    await editButton.trigger('click')
-
-    expect(wrapper.emitted('edit')).toBeTruthy()
-    expect(wrapper.emitted('edit')).toHaveLength(1)
   })
 
   it('renders correct icon based on status', () => {
@@ -114,5 +100,59 @@ describe('TodoItem', () => {
 
     const options = wrapper.findAll('option')
     expect(options.length).toBeGreaterThan(0)
+  })
+
+  it('enters edit mode on double click and emits update:text on save', async () => {
+    const wrapper = mount(TodoItem, {
+      props: {
+        todo: mockTodo,
+      },
+    })
+
+    const textDiv = wrapper.find('div[class*="flex-1"]')
+    await textDiv.trigger('dblclick')
+
+    const input = wrapper.find('input[type="text"]')
+    await input.setValue('Updated task')
+    await input.trigger('blur')
+
+    expect(wrapper.emitted('update:text')).toBeTruthy()
+    expect(wrapper.emitted('update:text')?.[0]).toEqual(['Updated task'])
+  })
+
+  it('does not emit update:text if text is unchanged', async () => {
+    const wrapper = mount(TodoItem, {
+      props: {
+        todo: mockTodo,
+      },
+    })
+
+    const textDiv = wrapper.find('div[class*="flex-1"]')
+    await textDiv.trigger('dblclick')
+
+    const input = wrapper.find('input[type="text"]')
+    await input.trigger('blur')
+
+    expect(wrapper.emitted('update:text')).toBeFalsy()
+  })
+
+  it('emits update:category when category is changed', async () => {
+    const wrapper = mount(TodoItem, {
+      props: {
+        todo: mockTodo,
+      },
+    })
+
+    const transferButton = wrapper.find('button[title="Transfer to category"]')
+    await transferButton.trigger('click')
+
+    const categoryButton = wrapper
+       .findAll('div button')
+       .find((btn) => btn.text().includes('Next') || btn.text().includes('Someday'))
+    if (categoryButton) {
+      await categoryButton.trigger('click')
+    }
+
+    expect(wrapper.emitted('update:category')).toBeTruthy()
   })
 })
