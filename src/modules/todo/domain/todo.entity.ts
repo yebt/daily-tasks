@@ -9,12 +9,17 @@ export enum TodoStatus {
 }
 
 export const TodoStatusIcon: Record<TodoStatus, string> = {
-  [TodoStatus.Waiting]: 'i-lucide-clock',
-  [TodoStatus.Inprogress]: 'i-lucide-play',
-  [TodoStatus.Completed]: 'i-lucide-check-circle',
-  [TodoStatus.Delegated]: 'i-lucide-user-forward',
-  [TodoStatus.Appointment]: 'i-lucide-calendar',
-  [TodoStatus.Cancel]: 'i-lucide-x-circle',
+  // [TodoStatus.Waiting]: 'i-lucide:clock',
+  [TodoStatus.Waiting]: 'i-lucide:circle-dashed',
+  // [TodoStatus.Inprogress]: 'i-lucide:play',
+  [TodoStatus.Inprogress]: 'i-lucide:coffee',
+  [TodoStatus.Completed]: 'i-lucide:circle-check-big',
+  [TodoStatus.Delegated]: 'i-lucide:circle-arrow-out-down-right',
+  // [TodoStatus.Appointment]: 'i-lucide-calendar',
+  // [TodoStatus.Appointment]: 'i-lucide:target',
+  [TodoStatus.Appointment]: 'i-lucide:calendar',
+  // [TodoStatus.Cancel]: 'i-lucide-x-circle',
+  [TodoStatus.Cancel]: 'i-lucide:circle-slash-2',
 }
 
 export const TodoStatusLabel: Record<TodoStatus, string> = {
