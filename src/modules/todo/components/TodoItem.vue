@@ -32,7 +32,7 @@ const statuses = TodoStatuses
     class="flex items-center gap-3 p-2 rounded-md group transition-all hover:( outline-gray-900/20 ) outline-1 -outline-offset-1 outline-dashed outline-transparent"
     :class="{
       'bg-emerald-50/30': todo.status === TodoStatus.Completed,
-      'hover:bg-emerald-50/80': todo.status === TodoStatus.Completed,
+      'hover:bg-emerald-50/70': todo.status === TodoStatus.Completed,
     }"
   >
     <div class="relative w-5 h-5 flex items-center justify-center">
