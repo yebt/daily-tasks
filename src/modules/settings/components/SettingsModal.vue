@@ -73,9 +73,7 @@ const handleCancel = () => {
               <em :class="apiKeyVisible ? 'i-lucide-eye-off' : 'i-lucide-eye'" class="w-4 h-4" />
             </button>
           </div>
-          <p class="mt-1 text-xs text-gray-500">
-            Your API key is stored securely in Firestore
-          </p>
+          <p class="mt-1 text-xs text-gray-500">Your API key is stored securely in Firestore</p>
         </div>
 
         <div v-if="settingsStore.error" class="p-3 bg-red-50 border border-red-200 rounded-lg">

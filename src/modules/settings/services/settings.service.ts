@@ -1,4 +1,13 @@
-import { getFirestore, collection, query, where, getDocs, setDoc, doc, updateDoc } from 'firebase/firestore'
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  setDoc,
+  doc,
+  updateDoc,
+} from 'firebase/firestore'
 import type { Settings } from '../domain/settings.entity'
 
 export class SettingsService {
