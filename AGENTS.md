@@ -1,244 +1,222 @@
-# Agent Instructions for Daily Tasks
+# AGENTS.md - Coding Guidelines for This Repository
 
-## Package Manager
+This document provides essential guidelines for agentic coding agents operating in the daily-tasks repository.
 
-**CRITICAL**: Always use `bun` instead of `npm` for all package management commands. The lock file is `bun.lock`, and using npm will cause inconsistencies.
-
-```bash
-bun install          # Install dependencies
-bun add package      # Add dependency
-bun add -d package   # Add dev dependency
-bun remove package   # Remove package
-bun update           # Update all packages
-bun run script       # Run npm script
-```
-
----
-
-## Build, Lint & Test Commands
+## Build, Test, and Lint Commands
 
 ### Development
 
-- `bun dev` - Start Vite dev server with HMR
-
-### Building
-
-- `bun build` - Run type-check then build (recommended)
-- `bun run build-only` - Build without type-check
-- `bun preview` - Preview production build locally
-
-### Type Checking
-
-- `bun run type-check` - Validate TypeScript (vue-tsc --build)
-
-### Linting & Formatting
-
-- `bun lint` - Run all linters (oxlint + eslint with fixes)
-- `bun run lint:oxlint` - Fast oxlint (fixes automatically)
-- `bun run lint:eslint` - ESLint with cache
-- `bun run format` - Format with oxfmt
-- `bun run format:prettier` - Format with Prettier
+```bash
+bun run dev              # Start dev server (Vite)
+bun run build           # Full build with type-checking
+bun run preview         # Preview production build
+bun run type-check      # Run TypeScript type-checking
+```
 
 ### Testing
 
-- `bun test:unit` - Run all tests (Vitest)
-- `bun test:unit path/to/test.spec.ts` - Run single test file
-- `bun test:unit --watch` - Watch mode
-- `bun test:unit --ui` - Interactive UI dashboard
+```bash
+bun run test:unit              # Run all tests with Vitest
+bun run test:unit -- src/foo   # Run tests in specific directory
+bun run test:unit -- --reporter=verbose  # Verbose test output
+```
 
----
+**Running Single Tests:**
 
-## Code Style Guidelines
+```bash
+# Run specific test file
+bun run test:unit -- src/__tests__/App.spec.ts
 
-### TypeScript & Types
+# Run test matching pattern
+bun run test:unit -- --grep "App renders"
 
-- **Strict mode enabled** via tsconfig
-- Use `interface` for object shapes; `type` for unions/primitives
-- **Always** annotate function return types explicitly
-- Avoid `any`; use `unknown` and narrow types
-- Prefer explicit `null` over `undefined`
-- Export types with `export type` or `export interface`
+# Watch mode for single test
+bun run test:unit -- --watch src/__tests__/App.spec.ts
+```
 
-### Imports & Module Organization
+### Linting & Formatting
 
-- **Path aliases**: `@/*`, `@core/*`, `@shared/*`, `@modules/*`
-- **Import order**:
-  1. External packages (vue, firebase, pinia, etc.)
-  2. Path-aliased imports
-  3. Relative imports
-  4. Type imports (`import type { ... }`)
-- Prefer named imports over defaults
-- Follow modular structure: `src/modules/[feature]/` with `components/`, `services/`, `store/`, `domain/`
-
-### Formatting & Syntax
-
-- **No semicolons** (configured)
-- **Single quotes only** (configured)
-- **Max line width**: 100 characters
-- **Indentation**: 2 spaces
-- **No trailing commas**
-
-### Naming Conventions
-
-- **Vue Components**: `PascalCase` (e.g., `UserCard.vue`, `SettingsModal.vue`)
-- **Services**: `.service.ts` suffix (e.g., `api.service.ts`)
-- **Models/Entities**: `.model.ts` or `.entity.ts` (e.g., `user.model.ts`)
-- **Pinia Stores**: `.store.ts` suffix (e.g., `auth.store.ts`)
-- **Constants**: `UPPER_SNAKE_CASE`
-- **Functions/Variables**: `camelCase`
-
-### Vue 3 Composition API Patterns
-
-- Use `<script setup lang="ts">` in SFCs
-- Type props with `defineProps<PropInterface>()`
-- Use `ref()` and `computed()` for reactivity
-- Template → Script → Style file order in SFCs
-
-### Error Handling
-
-- Always wrap async/error-prone code in try-catch
-- Log errors with context: `console.error('Operation failed:', error)`
-- Never silently swallow errors; re-throw after logging
-- Catch errors as `unknown`, then narrow types
-
-### DOM & Template
-
-- Use `v-if` over `v-show` (performance-first)
-- Use camelCase event handlers (`@click`, `@input`)
-- Bind classes dynamically: `[class.active]: isActive`
-- Use UnoCSS utility classes; avoid inline styles
-
-### Comments & Documentation
-
-- Document public functions/complex logic with JSDoc
-- Inline comments explain "why", not "what"
-- Mark technical debt: `// TODO:` or `// FIXME:`
-
----
+```bash
+bun run lint            # Run all linters (oxlint + eslint)
+bun run lint:oxlint     # Run oxlint with auto-fix
+bun run lint:eslint     # Run eslint with auto-fix
+bun run format          # Format with oxfmt
+bun run format:prettier # Format with prettier (src only)
+```
 
 ## Project Structure
 
 ```
 src/
-├── core/              # Global config, router, auth guards
-├── modules/           # Feature modules (organized by domain)
-│   └── [feature]/
-│       ├── components/     # Vue components
-│       ├── services/       # Business logic, API calls
-│       ├── store/          # Pinia stores
-│       └── domain/         # TypeScript types, interfaces
-├── shared/            # Shared utilities, components, design system
-└── __tests__/         # Unit test files
+├── core/               # Shared services, router, guards
+├── modules/            # Feature modules (auth, todo, settings)
+├── shared/             # Shared components, utilities
+├── __tests__/          # Unit tests
+├── App.vue             # Root component
+└── main.ts             # Application entry point
 ```
 
----
+## Code Style Guidelines
 
-## Tech Stack
+### Imports & Modules
 
-| Tool                   | Purpose                        |
-| ---------------------- | ------------------------------ |
-| **Vue 3**              | Framework with Composition API |
-| **Bun**                | Runtime & package manager      |
-| **Vite**               | Build tool                     |
-| **Vitest**             | Unit testing                   |
-| **Pinia**              | State management               |
-| **UnoCSS**             | Atomic CSS                     |
-| **ESLint + oxlint**    | Linting                        |
-| **oxfmt + Prettier**   | Code formatting                |
-| **Firebase + Vuefire** | Backend & realtime             |
-| **TypeScript 5.9**     | Type safety                    |
+- Use ES6 module imports (already configured as `"type": "module"`)
+- Organize imports: external → internal path aliases → relative
+- Always use path aliases from `tsconfig.app.json`:
+  - `@/*` → `./src/*`
+  - `@core/*` → `./src/core/*`
+  - `@shared/*` → `./src/shared/*`
+  - `@modules/*` → `./src/modules/*`
 
----
+### Formatting
 
-## Key Rules for Agents
+- **Print Width:** 100 characters (Prettier)
+- **Semicolons:** None
+- **Quotes:** Single quotes only
+- **Indentation:** 2 spaces
+- Run `bun run format` before committing
 
-1. Always run `bun lint` before committing
-2. Run full `bun build` to catch type errors early
-3. For quick testing: `bun test:unit --watch`
-4. Export types explicitly for cross-module usage
-5. Never import `@modules/` into `@core/` (unidirectional dependency)
-6. Use Pinia for global state; local state with `ref()`
-7. Keep components small and focused
+### TypeScript & Typing
 
-This file is designed as a "Standard Operating Procedure" (SOP) for any AI agent or developer joining the project. It focuses on the **methodology** and **execution** rather than the business logic.
+- Strict mode enabled via `@vue/tsconfig`
+- Always add explicit return types to functions
+- Use `interface` for object contracts, `type` for unions/primitives
+- Enums for fixed sets of values (see TodoStatus/TodoCategory examples)
+- No implicit `any` types
 
----
-
-# AGENTS.md: Technical Execution & Contribution Guide
-
-This guide explains **how** to write code for this project. Any agent acting on this repository must follow these structural and logical patterns to maintain the integrity of the **Vertical Slicing** and **Clean Architecture**.
-
-## 1. The Development Workflow (The "Chain of Command")
-
-When asked to implement a feature, do not start with the UI. Follow this strict sequence:
-
-1. **Domain Definition**: Check `domain/`. Create or update Enums and Interfaces. Ensure types are exhaustive.
-2. **Infrastructure Service**: Implement the Firebase logic in `services/`. Use `serverTimestamp()` for all date-related fields.
-3. **State Management**: Connect the service to the Store in `stores/`. Use VueFire for real-time data.
-4. **Presentation**: Build the View using UnoCSS and the Store.
-
-## 2. Layer Responsibilities
-
-### 📂 Domain Layer (`src/modules/*/domain/`)
-
-* **Allowed**: Interfaces, Enums, Type aliases, Pure functions (calculators, formatters).
-* **Forbidden**: Imports from `firebase`, `vue`, `pinia`, or other modules.
-* **Rule**: This is the "Source of Truth" for the data shape.
-
-### 📂 Service Layer (`src/modules/*/services/`)
-
-* **Allowed**: Firestore calls (`addDoc`, `updateDoc`, `writeBatch`), Auth calls.
-* **Forbidden**: Reactive state (ref/reactive), UI logic, routing.
-* **Rule**: Methods should be `async` and return Promises. Use `Omit<Entity, 'id'>` for create methods.
-
-### 📂 Store Layer (`src/modules/*/stores/`)
-
-* **Allowed**: `useCollection`, `useDocument`, `computed` getters for filtering.
-* **Forbidden**: Direct Firestore mutation logic (this belongs in the Service).
-* **Rule**: Always wrap VueFire queries in a getter: `useCollection(() => query)`.
-
-### 📂 View Layer (`src/modules/*/views/`)
-
-* **Allowed**: UI state (toggles, local inputs), UnoCSS classes, Lucide icons.
-* **Forbidden**: Direct Firebase imports.
-* **Rule**: Use `v-for` on store getters. Logic should be limited to "calling store actions".
-
----
-
-## 3. Standard Coding Patterns
-
-### Real-time Collections
-
-Always handle the "Auth Delay". Queries must be reactive to the user's UID:
+**Example:**
 
 ```typescript
-const todosQuery = computed(() => {
-  if (!authStore.user?.uid) return null; // Prevents SSR/Permission errors
-  return query(collection(db, 'todos'), where('userId', '==', authStore.user.uid));
-});
-const allTodos = useCollection(todosQuery);
+export interface Todo {
+  id?: string
+  text: string
+  status: TodoStatus
+  userId: string
+  createdAt: number
+  updatedAt: number
+}
 
+export const getTodoStatusIcon = (status: TodoStatus): string => {
+  return TodoStatusIcon[status]
+}
 ```
 
-### Batching Operations
+### Naming Conventions
 
-For operations affecting more than one document (like "Transfer tasks"), always use `writeBatch`. Never loop through IDs calling `updateDoc` individually.
+- **Files:** `camelCase.ts`, `PascalCase.vue`, `camelCase.spec.ts`
+- **Components:** PascalCase (e.g., `LoginPage.vue`)
+- **Stores:** Pinia store functions prefixed with `use` (e.g., `useAuthStore`)
+- **Enums:** PascalCase (e.g., `TodoStatus`, `TodoCategory`)
+- **Constants:** UPPER_SNAKE_CASE for enum values
+- **Functions/Methods:** camelCase (e.g., `handleLogin`, `getTodoStatus`)
+- **Boolean variables/functions:** Prefix with `is`, `has`, `can` (e.g., `isAuthenticated`, `canAccess`)
 
-### UI/UX Standards
+### Vue Components
 
-* **Scannability**: Use UnoCSS to create visual hierarchy.
-* **Feedback**: Always include `loading` states for async buttons.
-* **Safety**: Use `confirm()` or a modal before `delete` operations.
+- Use `<script setup lang="ts">` for all components
+- Use Composition API with ref/computed
+- Group props, refs, computed, methods logically
+- Template uses UnoCSS utility classes (Tailwind-like)
 
----
+**Example:**
 
-## 4. Communication & Refactoring
+```vue
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
-* **Shared vs. Local**: If you find yourself creating a component in a module that looks reusable (e.g., a Button or Modal), stop. Move it to `src/shared/design-system/components/`.
-* **Single Responsibility**: One component = One job. If a View grows beyond 300 lines, extract sub-components into the module's `/components` folder.
+const router = useRouter()
+const count = ref(0)
+const isVisible = computed(() => count.value > 0)
 
-## 5. Error Handling
+const handleClick = (): void => {
+  count.value++
+}
+</script>
 
-* **Graceful Failures**: Wrap Service calls in `try/catch`.
-* **Silent Success**: Don't alert "Success" for standard Firestore writes (real-time UI is enough), but do alert on "Error".
+<template>
+  <button @click="handleClick">
+    {{ count }}
+  </button>
+</template>
+```
 
+### Store Management (Pinia)
+
+- Use Pinia's `defineStore` with Composition API syntax
+- Accept HMR updates for hot module reload
+- Return store state, computed, and actions as object
+
+**Example:**
+
+```typescript
+import { defineStore, acceptHMRUpdate } from 'pinia'
+import { computed, ref } from 'vue'
+
+export const useAuthStore = defineStore('auth', () => {
+  const user = ref(null)
+  const isAuthenticated = computed(() => !!user.value)
+
+  const login = async (email: string, password: string): Promise<void> => {
+    // login logic
+  }
+
+  return { user, isAuthenticated, login }
+})
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
+}
+```
+
+### Error Handling
+
+- Use `try-catch` blocks for async operations
+- Always catch and log errors with context
+- Include error messages in UI feedback when appropriate
+- Use `console.error()` for debugging (remove before production)
+
+**Example:**
+
+```typescript
+const handleLogin = async (): Promise<void> => {
+  try {
+    loading.value = true
+    await authStore.login(email.value, password.value, rememberMe.value)
+    router.push('/')
+  } catch (error) {
+    console.error('Login failed:', error)
+    errorMsg.value = 'Invalid credentials'
+  } finally {
+    loading.value = false
+  }
+}
+```
+
+### Testing
+
+- Use Vitest with `@vue/test-utils`
+- Test files: `src/**/__tests__/*.spec.ts`
+- Use `describe` and `it` blocks
+- Mock external dependencies (e.g., RouterView)
+
+## Tools & Technologies
+
+- **Framework:** Vue 3.5+
+- **Language:** TypeScript 5.9
+- **Testing:** Vitest 4.0 + Vue Test Utils
+- **Linting:** ESLint 9 + Oxlint 1.41
+- **Formatting:** Prettier 3.8
+- **Build:** Vite (beta)
+- **State Management:** Pinia 3
+- **Backend:** Firebase with Vuefire
+- **UI:** UnoCSS with Tailwind preset
+- **Icons:** Lucide (via @iconify-json/lucide)
+
+## Important Notes
+
+- Node version required: 20.19.0 or 22.12.0+
+- All code must pass type-checking, linting, and tests
+- Never commit code with failing linters or tests
+- Use relative paths for local imports within modules
+- Use absolute path aliases across module boundaries
