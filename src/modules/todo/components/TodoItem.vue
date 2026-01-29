@@ -25,23 +25,35 @@ const handleDelete = () => {
 }
 
 const statuses = TodoStatuses
+
+const classesTodoStatusIcon: Record<TodoStatus, string> = {
+  [TodoStatus.Inprogress]: 'text-blue-500',
+  [TodoStatus.Waiting]: 'text-gray-400/50',
+  [TodoStatus.Appointment]: 'text-gray-400',
+  [TodoStatus.Delegated]: 'text-gray-400',
+  [TodoStatus.Completed]: 'text-emerald-500',
+  [TodoStatus.Cancel]: 'text-gray-400',
+}
+
+const classesTodoStatus: Record<TodoStatus, string> = {
+  [TodoStatus.Inprogress]: '',
+  [TodoStatus.Waiting]: '',
+  [TodoStatus.Appointment]: '',
+  [TodoStatus.Delegated]: '',
+  [TodoStatus.Completed]: 'bg-emerald-50/30 hover:bg-emerald-50/70',
+  [TodoStatus.Cancel]: 'bg-stone-50/30 opacity-60 italic',
+}
 </script>
 
 <template>
   <div
-    class="flex items-center gap-3 p-2 rounded-md group transition-all hover:( outline-gray-900/20 ) outline-1 -outline-offset-1 outline-dashed outline-transparent"
-    :class="{
-      'bg-emerald-50/30': todo.status === TodoStatus.Completed,
-      'hover:bg-emerald-50/70': todo.status === TodoStatus.Completed,
-    }"
+    class="flex items-center gap-3 p-2 rounded-md group transition-all hover:( outline-gray-900/20 ) outline-1 -outline-offset-1- outline-dashed outline-transparent"
+    :class="[classesTodoStatus[todo.status]]"
   >
     <div class="relative w-5 h-5 flex items-center justify-center">
       <em
-        :class="[
-          getStatusIcon(todo.status),
-          todo.status === TodoStatus.Completed ? 'text-emerald-500' : 'text-gray-400',
-        ]"
-        class="w-4 h-4 group-hover:text-blue-500"
+        :class="[getStatusIcon(todo.status), classesTodoStatusIcon[todo.status]]"
+        class="w-4 h-4 group-hover:text-blue-500 drop-shadow transition"
       />
       <select
         :value="todo.status"
