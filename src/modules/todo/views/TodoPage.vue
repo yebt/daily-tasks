@@ -81,16 +81,21 @@ const handleUpdateText = async (id: string, newText: string) => {
 }
 
 const handleUpdateCategory = async (id: string, newCategory: TodoCategory) => {
-  await TodoService.updateTodo(id, { category: newCategory })
+  // When transferring from Today to other categories, set status to Waiting
+  if (newCategory !== TodoCategory.Today) {
+    await TodoService.updateTodo(id, { category: newCategory, status: TodoStatus.Waiting })
+  } else {
+    await TodoService.updateTodo(id, { category: newCategory })
+  }
 }
 
 const handleDeleteTodo = async (id: string) => {
-   const confirmed = await confirmModal.confirm({
-     title: 'Delete Task',
-     message: 'Are you sure you want to delete this task?',
-     confirmText: 'Delete',
-     isDangerous: true,
-   })
+  const confirmed = await confirmModal.confirm({
+    title: 'Delete Task',
+    message: 'Are you sure you want to delete this task?',
+    confirmText: 'Delete',
+    isDangerous: true,
+  })
 
   if (confirmed) {
     try {

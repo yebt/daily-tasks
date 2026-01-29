@@ -121,4 +121,38 @@ export const TodoService = {
     }
     return count
   },
+
+  /**
+   * BULK OPERATION: Delete multiple todos
+   */
+  async deleteTodosBatch(ids: string[]) {
+    if (ids.length === 0) return
+    const batch = writeBatch(db)
+
+    ids.forEach((id) => {
+      const todoRef = doc(db, COL_NAME, id)
+      batch.delete(todoRef)
+    })
+
+    await batch.commit()
+  },
+
+  /**
+   * BULK OPERATION: Transfer multiple todos to a new category and set status to WAITING
+   */
+  async transferTodosBatch(ids: string[], newCategory: TodoCategory) {
+    if (ids.length === 0) return
+    const batch = writeBatch(db)
+
+    ids.forEach((id) => {
+      const todoRef = doc(db, COL_NAME, id)
+      batch.update(todoRef, {
+        category: newCategory,
+        status: TodoStatus.Waiting,
+        updatedAt: serverTimestamp(),
+      })
+    })
+
+    await batch.commit()
+  },
 }
