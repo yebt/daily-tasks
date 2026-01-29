@@ -29,8 +29,11 @@ const statuses = TodoStatuses
 
 <template>
   <div
-    class="flex items-center gap-3 p-2 rounded-md hover:bg-white group transition-colors"
-    :class="{ 'bg-emerald-50/30': todo.status === TodoStatus.Completed }"
+    class="flex items-center gap-3 p-2 rounded-md group transition-all hover:( outline-gray-900/20 ) outline-1 -outline-offset-1 outline-dashed outline-transparent"
+    :class="{
+      'bg-emerald-50/30': todo.status === TodoStatus.Completed,
+      'hover:bg-emerald-50/80': todo.status === TodoStatus.Completed,
+    }"
   >
     <div class="relative w-5 h-5 flex items-center justify-center">
       <em
@@ -63,8 +66,7 @@ const statuses = TodoStatuses
     </span>
     <button
       @click="handleDelete"
-      class="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50
-      rounded transition-all flex"
+      class="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-all flex"
       title="Delete task"
     >
       <em class="i-lucide-trash-2 w-4 h-4" />
