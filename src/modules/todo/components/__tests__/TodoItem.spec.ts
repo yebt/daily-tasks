@@ -60,11 +60,25 @@ describe('TodoItem', () => {
       },
     })
 
-    const deleteButton = wrapper.find('button')
+    const deleteButton = wrapper.find('[data-testid="delete-button"]')
     await deleteButton.trigger('click')
 
     expect(wrapper.emitted('delete')).toBeTruthy()
     expect(wrapper.emitted('delete')).toHaveLength(1)
+  })
+
+  it('emits edit event when edit button is clicked', async () => {
+    const wrapper = mount(TodoItem, {
+      props: {
+        todo: mockTodo,
+      },
+    })
+
+    const editButton = wrapper.find('[data-testid="edit-button"]')
+    await editButton.trigger('click')
+
+    expect(wrapper.emitted('edit')).toBeTruthy()
+    expect(wrapper.emitted('edit')).toHaveLength(1)
   })
 
   it('renders correct icon based on status', () => {
@@ -75,7 +89,7 @@ describe('TodoItem', () => {
     })
 
     const icon = wrapper.find('em')
-    expect(icon.classes()).toContain('i-lucide-clock') // Waiting status icon
+    expect(icon.classes()).toContain('i-lucide:circle-dashed') // Waiting status icon
   })
 
   it('applies emerald background when todo is completed', () => {
