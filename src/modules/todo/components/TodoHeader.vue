@@ -26,9 +26,9 @@ const router = useRouter()
 const route = useRoute()
 
 const tabs: Array<{ name: string; path: string; icon: string }> = [
-  { name: 'Today', path: '/todos', icon: 'i-lucide-calendar-today' },
-  { name: 'Next', path: '/next', icon: 'i-lucide-clock' },
-  { name: 'Someday', path: '/someday', icon: 'i-lucide-lightbulb' },
+  { name: 'Today', path: '/todos', icon: 'i-lucide:target' },
+  { name: 'Next', path: '/next', icon: 'i-lucide:clock' },
+  { name: 'Someday', path: '/someday', icon: 'i-lucide:lightbulb' },
 ]
 
 const currentTab = computed<(typeof tabs)[0]>(() => {

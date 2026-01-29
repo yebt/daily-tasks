@@ -61,9 +61,9 @@ const getTransferOptions = (): Array<{
   icon: string
 }> => {
   const allOptions = [
-    { label: 'Today', value: 'TODAY' as const, icon: 'i-lucide-calendar-today' },
-    { label: 'Next', value: 'NEXT' as const, icon: 'i-lucide-clock' },
-    { label: 'Someday', value: 'SOME DAY' as const, icon: 'i-lucide-lightbulb' },
+    { label: 'Today', value: 'TODAY' as const, icon: 'i-lucide:target' },
+    { label: 'Next', value: 'NEXT' as const, icon: 'i-lucide:clock' },
+    { label: 'Someday', value: 'SOME DAY' as const, icon: 'i-lucide:lightbulb' },
   ]
   // Filter out current category
   return allOptions.filter((opt) => opt.value !== props.currentCategory)
