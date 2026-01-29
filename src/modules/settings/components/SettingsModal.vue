@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useSettingsStore } from '../store/settings.store'
+import { useAuthStore } from '@/modules/auth/stores/auth.store'
 
 interface Props {
   isOpen: boolean
@@ -10,19 +11,31 @@ interface Emits {
   (e: 'close'): void
 }
 
-defineProps<Props>()
-defineEmits<Emits>()
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
 
 const settingsStore = useSettingsStore()
+const authStore = useAuthStore()
+
 const apiKeyInput = ref('')
 const apiKeyVisible = ref(false)
 const isSaving = ref(false)
 
 const isModified = computed(() => apiKeyInput.value !== settingsStore.geminiApiKey)
 
-onMounted(() => {
-  apiKeyInput.value = settingsStore.geminiApiKey
-})
+watch(
+  () => props.isOpen,
+  async (newVal) => {
+    if (newVal && authStore.user) {
+      await settingsStore.loadSettings()
+      apiKeyInput.value = settingsStore.geminiApiKey
+    } else if (!newVal) {
+      // When modal closes, reset the input to the current store value
+      apiKeyInput.value = settingsStore.geminiApiKey
+    }
+  },
+  { immediate: true },
+)
 
 const handleSave = async () => {
   isSaving.value = true
@@ -37,6 +50,7 @@ const handleSave = async () => {
 
 const handleCancel = () => {
   apiKeyInput.value = settingsStore.geminiApiKey
+  emit('close')
 }
 </script>
 
