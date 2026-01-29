@@ -8,3 +8,8 @@ body {
 em {
   display: inline-block;
 }
+
+
+html {
+  scrollbar-gutter: stable;
+}
