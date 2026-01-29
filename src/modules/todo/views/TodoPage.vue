@@ -3,10 +3,8 @@ import { ref, watch } from 'vue'
 import { useTodoStore } from '../store/todo.store'
 import { TodoService } from '../services/todo.service'
 import {
-  getTodoStatusIcon,
   TodoCategory,
   TodoStatus,
-  TodoStatuses,
   WeekDays,
   type Todo,
   type WeekDayIndex,
@@ -15,10 +13,10 @@ import { useAuthStore } from '@/modules/auth/stores/auth.store.ts'
 import { useConfirmModal } from '@/shared/design-system/composables/useConfirmModal'
 import ConfirmModal from '@/shared/design-system/components/ConfirmModal.vue'
 import SettingsModal from '@/modules/settings/components/SettingsModal.vue'
+import TodoItem from '../components/TodoItem.vue'
 
 //
 const days = Object.values(WeekDays).filter((v) => typeof v === 'string') as string[]
-const statuses = TodoStatuses
 
 const currentDay = new Date().getDay()
 
@@ -46,10 +44,6 @@ const sortTodos = (todos: Todo[]) => {
     [TodoStatus.Cancel]: 6,
   }
   return [...todos].sort((a, b) => (priority[a.status] || 99) - (priority[b.status] || 99))
-}
-
-const getStatusIcon = (statusValue: TodoStatus) => {
-  return getTodoStatusIcon(statusValue)
 }
 
 const toggleDay = (indx: number) => {
@@ -220,53 +214,13 @@ watch(
 
               <div class="space-y-1">
                 <TransitionGroup name="vt-fade">
-                  <div
+                  <TodoItem
                     v-for="todo in sortTodos(todoStore.getTodosByDay(index))"
                     :key="todo.id"
-                    class="flex items-center gap-3 p-2 rounded-md hover:bg-white group transition-colors"
-                    :class="{ 'bg-emerald-50/30': todo.status === TodoStatus.Completed }"
-                  >
-                    <div class="relative w-5 h-5 flex items-center justify-center">
-                      <em
-                        :class="[
-                          getStatusIcon(todo.status),
-                          todo.status === TodoStatus.Completed
-                            ? 'text-emerald-500'
-                            : 'text-gray-400',
-                        ]"
-                        class="w-4 h-4 group-hover:text-blue-500"
-                      />
-                      <select
-                        :value="todo.status"
-                        @change="
-                          (e) => handleUpdateStatus(todo.id!, (e.target as HTMLSelectElement).value)
-                        "
-                        class="absolute inset-0 opacity-0 cursor-pointer"
-                      >
-                        <option v-for="s in statuses" :key="s.value" :value="s.value">
-                          {{ s.label }}
-                        </option>
-                      </select>
-                    </div>
-
-                    <span
-                      class="text-sm flex-1 select-none"
-                      :class="{
-                        'line-through text-slate-400 font-normal':
-                          todo.status === TodoStatus.Cancel || todo.status === TodoStatus.Completed,
-                        'text-emerald-700/70': todo.status === TodoStatus.Completed,
-                      }"
-                    >
-                      {{ todo.text }}
-                    </span>
-                    <button
-                      @click="handleDeleteTodo(todo.id!)"
-                      class="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-all"
-                      title="Delete task"
-                    >
-                      <em class="i-lucide-trash-2 w-4 h-4" />
-                    </button>
-                  </div>
+                    :todo="todo"
+                    @update:status="(status) => handleUpdateStatus(todo.id!, status)"
+                    @delete="handleDeleteTodo(todo.id!)"
+                  />
                 </TransitionGroup>
               </div>
 
