@@ -24,9 +24,10 @@ export class SettingsService {
       }
 
       const doc = snapshot.docs[0]
+
       return {
-        id: doc.id,
-        ...doc.data(),
+        id: doc?.id,
+        ...doc?.data(),
       } as Settings
     } catch (error) {
       console.error('Error fetching settings:', error)
@@ -52,7 +53,9 @@ export class SettingsService {
         })
       } else {
         // Update existing settings
-        const docId = snapshot.docs[0].id
+        const docId = snapshot.docs[0]?.id
+        if (!docId) throw new Error('Document ID not found')
+
         await updateDoc(doc(this.db, this.collectionName, docId), {
           ...settings,
           updatedAt: timestamp,
