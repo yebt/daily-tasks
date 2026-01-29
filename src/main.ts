@@ -7,15 +7,19 @@ import { firebaseApp } from './shared/infrastructure/firebase'
 
 import App from './App.vue'
 import router from '@/core/router'
+import { loadSentry } from './core/services/sentry'
 
 const app = createApp(App)
+const pinia = createPinia()
+
+loadSentry(app, router, pinia)
 
 app.use(VueFire, {
   firebaseApp,
   modules: [VueFireAuth()],
 })
 
-app.use(createPinia())
+app.use(pinia)
 app.use(router)
 
 app.mount('#app')
