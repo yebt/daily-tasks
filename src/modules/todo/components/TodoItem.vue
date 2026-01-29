@@ -27,6 +27,12 @@ const showCategoryMenu = ref(false)
 const showStatusMenu = ref(false)
 const inputRef = ref<HTMLInputElement>()
 const containerRef = ref<HTMLDivElement>()
+const statusMenuRef = ref<HTMLDivElement>()
+const categoryMenuRef = ref<HTMLDivElement>()
+const statusButtonRef = ref<HTMLButtonElement>()
+const categoryButtonRef = ref<HTMLButtonElement>()
+const statusMenuPositionTop = ref(true)
+const categoryMenuPositionTop = ref(true)
 
 const getStatusIcon = (statusValue: TodoStatus): string => {
   return getTodoStatusIcon(statusValue)
@@ -84,6 +90,44 @@ const handleContainerMouseLeave = () => {
   showStatusMenu.value = false
 }
 
+const calculateStatusMenuPosition = async () => {
+  await nextTick()
+  if (!statusButtonRef.value || !statusMenuRef.value) return
+
+  const buttonRect = statusButtonRef.value.getBoundingClientRect()
+  const menuHeight = statusMenuRef.value.offsetHeight
+  const windowHeight = window.innerHeight
+
+  // Si hay espacio abajo, posicionar abajo. Si no, posicionar arriba
+  statusMenuPositionTop.value = buttonRect.bottom + menuHeight + 10 < windowHeight
+}
+
+const calculateCategoryMenuPosition = async () => {
+  await nextTick()
+  if (!categoryButtonRef.value || !categoryMenuRef.value) return
+
+  const buttonRect = categoryButtonRef.value.getBoundingClientRect()
+  const menuHeight = categoryMenuRef.value.offsetHeight
+  const windowHeight = window.innerHeight
+
+  // Si hay espacio abajo, posicionar abajo. Si no, posicionar arriba
+  categoryMenuPositionTop.value = buttonRect.bottom + menuHeight + 10 < windowHeight
+}
+
+const handleStatusMenuOpen = async () => {
+  showStatusMenu.value = !showStatusMenu.value
+  if (showStatusMenu.value) {
+    await calculateStatusMenuPosition()
+  }
+}
+
+const handleCategoryMenuOpen = async () => {
+  showCategoryMenu.value = !showCategoryMenu.value
+  if (showCategoryMenu.value) {
+    await calculateCategoryMenuPosition()
+  }
+}
+
 const isTransferable = computed(() => {
   return Object.values(TodoCategory).filter((cat) => cat !== props.todo.category)
 })
@@ -132,7 +176,8 @@ const getCategoryLabel = (category: TodoCategory): string => {
   >
     <div class="relative flex items-center justify-center">
       <button
-        @click="showStatusMenu = !showStatusMenu"
+        ref="statusButtonRef"
+        @click="handleStatusMenuOpen"
         class="relative flex items-center justify-center w-6 h-6 rounded transition-all hover:bg-gray-100/50"
         :title="`Status: ${statuses.find((s) => s.value === todo.status)?.label}`"
       >
@@ -144,7 +189,11 @@ const getCategoryLabel = (category: TodoCategory): string => {
 
       <div
         v-if="showStatusMenu"
-        class="absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-max"
+        ref="statusMenuRef"
+        :class="[
+          'absolute left-0 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-max',
+          statusMenuPositionTop ? 'top-full mt-1' : 'bottom-full mb-1',
+        ]"
       >
         <button
           v-for="status in statuses"
@@ -193,7 +242,8 @@ const getCategoryLabel = (category: TodoCategory): string => {
     <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
       <div class="relative">
         <button
-          @click="showCategoryMenu = !showCategoryMenu"
+          ref="categoryButtonRef"
+          @click="handleCategoryMenuOpen"
           class="flex p-1 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-all"
           title="Transfer to category"
         >
@@ -202,7 +252,11 @@ const getCategoryLabel = (category: TodoCategory): string => {
 
         <div
           v-if="showCategoryMenu"
-          class="absolute right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-max"
+          ref="categoryMenuRef"
+          :class="[
+            'absolute right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-max',
+            categoryMenuPositionTop ? 'top-full mt-1' : 'bottom-full mb-1',
+          ]"
         >
           <button
             v-for="category in isTransferable"
