@@ -22,13 +22,14 @@ import DailyHistoryModal from '@modules/daily/components/DailyHistoryModal.vue'
 const days = Object.values(WeekDays).filter((v) => typeof v === 'string') as string[]
 
 const currentDay = new Date().getDay()
-const dateOfCurrentDay = computed(() => {
-  const today = new Date()
-  const diff = currentDay - today.getDay()
-  const targetDate = new Date(today)
-  targetDate.setDate(today.getDate() + diff)
-  return targetDate
-})
+
+// const dateOfCurrentDay = computed(() => {
+//   const today = new Date()
+//   const diff = currentDay - today.getDay()
+//   const targetDate = new Date(today)
+//   targetDate.setDate(today.getDate() + diff)
+//   return targetDate
+// })
 
 const getFormattedDateOfTheDay = (dayIndex: number) => {
   const today = new Date()
@@ -200,10 +201,8 @@ watch(
     <DailyHistoryModal :is-open="isDailyHistoryOpen" @close="isDailyHistoryOpen = false" />
     <div class="max-w-3xl mx-auto p-2 md:px-10">
       <div class="flex flex-col gap-1">
-        <TransitionGroup name="list">
           <template v-for="(day, index) in days" :key="day">
             <section v-if="index === currentDay || showAllDays" class="transition-all duration-200">
-              <Transition >
                 <button
                   @click="toggleDay(index)"
                   v-if="showAllDays"
@@ -244,7 +243,6 @@ watch(
                     />
                   </div>
                 </button>
-              </Transition>
 
               <div
                 v-if="openDay === index"
@@ -261,7 +259,6 @@ watch(
                 </div>
 
                 <div class="space-y-1">
-                  <TransitionGroup name="fade">
                     <TodoItem
                       v-for="todo in sortTodos(todoStore.getTodosByDay(index))"
                       :key="todo.id"
@@ -271,7 +268,6 @@ watch(
                       @update:category="(category) => handleUpdateCategory(todo.id!, category)"
                       @delete="handleDeleteTodo(todo.id!)"
                     />
-                  </TransitionGroup>
                 </div>
 
                 <div
@@ -297,7 +293,6 @@ watch(
               </div>
             </section>
           </template>
-        </TransitionGroup>
       </div>
     </div>
   </div>
@@ -331,6 +326,6 @@ watch(
 /* ensure leaving items are taken out of layout flow so that moving
    animations can be calculated correctly. */
 .list-leave-active {
-  position: absolute;
+  /* position: absolute; */
 }
 </style>
