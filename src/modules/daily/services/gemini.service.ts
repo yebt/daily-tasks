@@ -1,6 +1,12 @@
 import { GoogleGenAI } from '@google/genai'
 import type { Todo } from '@modules/todo/domain/todo.entity'
 
+interface AvailableModel {
+  name: string
+  displayName: string
+  description: string
+}
+
 class GeminiService {
   private apiKey: string = ''
   private model: string = 'gemini-1.5-flash'
@@ -11,8 +17,36 @@ class GeminiService {
     this.ai = new GoogleGenAI({ apiKey: this.apiKey })
   }
 
+  setModel(model: string): void {
+    this.model = model
+  }
+
   isConfigured(): boolean {
     return !!this.apiKey && !!this.ai
+  }
+
+  async getAvailableModels(): Promise<AvailableModel[]> {
+    if (!this.isConfigured()) {
+      throw new Error('Gemini API key not configured')
+    }
+
+    try {
+      const pager = await this.ai!.models.list()
+      const models: AvailableModel[] = []
+
+      for await (const model of pager) {
+        models.push({
+          name: model.name || '',
+          displayName: model.displayName || model.name || '',
+          description: model.description || '',
+        })
+      }
+
+      return models
+    } catch (error) {
+      console.error('Error fetching available models:', error)
+      throw error
+    }
   }
 
   private formatTasksForTemplate(tasks: Todo[]): string {
