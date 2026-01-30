@@ -17,6 +17,7 @@
     "format": "oxfmt src/"
   },
   "dependencies": {
+    "@google/genai": "^1.38.0",
     "@sentry/vue": "^10.37.0",
     "firebase": "^12.8.0",
     "pinia": "^3.0.4",
