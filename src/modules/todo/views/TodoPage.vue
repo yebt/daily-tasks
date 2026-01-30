@@ -15,6 +15,8 @@ import ConfirmModal from '@/shared/design-system/components/ConfirmModal.vue'
 import SettingsModal from '@/modules/settings/components/SettingsModal.vue'
 import TodoHeader from '../components/TodoHeader.vue'
 import TodoItem from '../components/TodoItem.vue'
+import GenDailyModal from '@modules/daily/components/GenDailyModal.vue'
+import DailyHistoryModal from '@modules/daily/components/DailyHistoryModal.vue'
 
 //
 const days = Object.values(WeekDays).filter((v) => typeof v === 'string') as string[]
@@ -31,6 +33,8 @@ const newTaskText = ref('')
 const showAllDays = ref(false)
 const isTransferring = ref(false)
 const isSettingsOpen = ref(false)
+const isGenDailyOpen = ref(false)
+const isDailyHistoryOpen = ref(false)
 
 //
 // ================================================================================
@@ -136,13 +140,32 @@ watch(
 <template>
   <div class="pb-10">
     <TodoHeader
-      title="Today"
+      title="My Week"
       :show-all-days-toggle="true"
       :all-days-enabled="showAllDays"
       :task-count="todoStore.todayTodos.length"
       @toggle-all-days="showAllDays = !showAllDays"
       @open-settings="isSettingsOpen = true"
-    />
+    >
+      <template #extra-buttons>
+        <button
+          @click="isDailyHistoryOpen = true"
+          class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
+          title="Daily history"
+        >
+          <em class="i-lucide-history w-4 h-4" />
+          History
+        </button>
+        <button
+          @click="isGenDailyOpen = true"
+          class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 transition-all"
+          title="Generate daily with AI"
+        >
+          <em class="i-lucide-sparkles w-4 h-4" />
+          Gen Daily
+        </button>
+      </template>
+    </TodoHeader>
     <ConfirmModal
       :is-open="confirmModal.isOpen"
       :title="confirmModal.title"
@@ -154,6 +177,8 @@ watch(
       @cancel="confirmModal.handleCancel()"
     />
     <SettingsModal :is-open="isSettingsOpen" @close="isSettingsOpen = false" />
+    <GenDailyModal :is-open="isGenDailyOpen" @close="isGenDailyOpen = false" />
+    <DailyHistoryModal :is-open="isDailyHistoryOpen" @close="isDailyHistoryOpen = false" />
     <div class="max-w-3xl mx-auto p-2 md:px-10">
       <div class="flex flex-col gap-1">
         <TransitionGroup name="list">

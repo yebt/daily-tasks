@@ -88,7 +88,7 @@ const classesTodoStatus: Record<TodoStatus, string> = {
 }
 
 const formattedDate = computed(() => {
-  return new Date(props.todo.createdAt).toLocaleDateString('es-ES', {
+  return new Date(props.todo.createdAt.toDate()).toLocaleDateString('es-ES', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

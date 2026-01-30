@@ -57,6 +57,8 @@ const handleOpenSettings = () => {
         <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">{{ title }}</h1>
 
         <div class="flex items-center gap-3">
+          <slot name="extra-buttons" />
+
           <transition name="fade">
             <span
               v-if="taskCount > 0"

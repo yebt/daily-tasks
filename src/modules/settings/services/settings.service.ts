@@ -70,4 +70,8 @@ export class SettingsService {
   static async updateGeminiApiKey(userId: string, apiKey: string): Promise<void> {
     await this.saveSettings(userId, { geminiApiKey: apiKey })
   }
+
+  static async updateDailyTemplate(userId: string, template: string): Promise<void> {
+    await this.saveSettings(userId, { dailyTemplate: template })
+  }
 }
