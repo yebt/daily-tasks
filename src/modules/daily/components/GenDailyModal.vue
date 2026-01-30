@@ -7,6 +7,12 @@ import { useDailyStore } from '../store/daily.store'
 import { geminiService } from '../services/gemini.service'
 import { TodoCategory } from '@modules/todo/domain/todo.entity'
 
+interface AvailableModel {
+  name: string
+  displayName: string
+  description: string
+}
+
 interface Emits {
   (e: 'close'): void
 }
@@ -26,19 +32,42 @@ const includeIncomplete = ref(false)
 const isGenerating = ref(false)
 const error = ref<string | null>(null)
 const isLoadingSettings = ref(false)
+const isLoadingModels = ref(false)
+const availableModels = ref<AvailableModel[]>([])
+const selectedModel = ref<string>('gemini-1.5-flash')
 
-// Load settings when modal opens
+// Load settings and available models when modal opens
 watch(
   () => props.isOpen,
   async (newVal) => {
     if (newVal && authStore.user) {
       isLoadingSettings.value = true
+      isLoadingModels.value = true
+      error.value = null
+
       try {
         await settingsStore.loadSettings()
+
+        // Load available models if API key is configured
+        if (settingsStore.geminiApiKey) {
+          try {
+            geminiService.setApiKey(settingsStore.geminiApiKey)
+            const models = await geminiService.getAvailableModels()
+            availableModels.value = models
+            // Set the first model as default
+            if (models.length > 0 && models[0]) {
+              selectedModel.value = models[0].name
+            }
+          } catch (err) {
+            console.error('Failed to load models:', err)
+            error.value = 'Failed to load available models'
+          }
+        }
       } catch (err) {
         console.error('Failed to load settings:', err)
       } finally {
         isLoadingSettings.value = false
+        isLoadingModels.value = false
       }
     }
   },
@@ -64,8 +93,8 @@ const handleGenerate = async () => {
     return
   }
 
-  if (isLoadingSettings.value) {
-    error.value = 'Loading settings...'
+  if (isLoadingSettings.value || isLoadingModels.value) {
+    error.value = 'Loading settings and models...'
     return
   }
 
@@ -78,8 +107,9 @@ const handleGenerate = async () => {
   error.value = null
 
   try {
-    // Set the API key for the gemini service
+    // Set the API key and selected model for the gemini service
     geminiService.setApiKey(settingsStore.geminiApiKey)
+    geminiService.setModel(selectedModel.value)
 
     // Get tasks to include
     let tasksToInclude = getTodayTasks()
@@ -154,6 +184,30 @@ const handleClose = () => {
           </p>
         </div>
 
+        <div>
+          <label for="model-select" class="block text-sm font-medium text-gray-700 mb-2">
+            AI Model
+          </label>
+          <select
+            id="model-select"
+            v-model="selectedModel"
+            :disabled="isLoadingModels || availableModels.length === 0"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <option v-if="isLoadingModels" value="">Loading models...</option>
+            <option v-else-if="availableModels.length === 0" value="">No models available</option>
+            <option v-for="model in availableModels" :key="model.name" :value="model.name">
+              {{ model.displayName }}
+            </option>
+          </select>
+          <p v-if="selectedModel && availableModels.length > 0" class="mt-2 text-xs text-gray-500">
+            {{
+              availableModels.find((m) => m.name === selectedModel)?.description ||
+              'No description available'
+            }}
+          </p>
+        </div>
+
         <div v-if="error" class="p-3 bg-red-50 border border-red-200 rounded-lg">
           <p class="text-sm text-red-600">{{ error }}</p>
         </div>
@@ -168,13 +222,28 @@ const handleClose = () => {
           Cancel
         </button>
         <button
-           @click="handleGenerate"
-           :disabled="isGenerating || !canGenerate() || isLoadingSettings"
-           class="flex-1 px-4 py-2 text-sm font-bold rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-         >
-           <em v-if="isGenerating || isLoadingSettings" class="i-lucide-loader-2 w-4 h-4 animate-spin" />
-           {{ isLoadingSettings ? 'Loading...' : isGenerating ? 'Generating...' : 'Generate' }}
-         </button>
+          @click="handleGenerate"
+          :disabled="
+            isGenerating ||
+            !canGenerate() ||
+            isLoadingSettings ||
+            isLoadingModels ||
+            availableModels.length === 0
+          "
+          class="flex-1 px-4 py-2 text-sm font-bold rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+        >
+          <em
+            v-if="isGenerating || isLoadingSettings || isLoadingModels"
+            class="i-lucide-loader-2 w-4 h-4 animate-spin"
+          />
+          {{
+            isLoadingSettings || isLoadingModels
+              ? 'Loading...'
+              : isGenerating
+                ? 'Generating...'
+                : 'Generate'
+          }}
+        </button>
       </div>
     </div>
   </div>
