@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick, computed } from 'vue'
+import { ref, nextTick, computed, useTemplateRef, toRef } from 'vue'
 import {
   getTodoStatusIcon,
   TodoStatus,
@@ -7,10 +7,13 @@ import {
   TodoCategory,
   type Todo,
 } from '../domain/todo.entity'
+import { onClickOutside, useTextareaAutosize } from '@vueuse/core'
 
 interface Props {
   todo: Todo
 }
+
+const { textarea, input } = useTextareaAutosize()
 
 const props = defineProps<Props>()
 
@@ -21,16 +24,22 @@ const emit = defineEmits<{
   delete: []
 }>()
 
+const todoElemnt = toRef(props, 'todo')
+
 const isEditing = ref(false)
-const editedText = ref(props.todo.text)
+// const editedText = ref(props.todo.text)
+input.value = todoElemnt.value.text
+
 const showCategoryMenu = ref(false)
 const showStatusMenu = ref(false)
-const inputRef = ref<HTMLInputElement>()
-const containerRef = ref<HTMLDivElement>()
-const statusMenuRef = ref<HTMLDivElement>()
-const categoryMenuRef = ref<HTMLDivElement>()
-const statusButtonRef = ref<HTMLButtonElement>()
-const categoryButtonRef = ref<HTMLButtonElement>()
+// const containerRef = ref<HTMLDivElement>()
+
+// const inputRef = useTemplateRef('inputRef')
+const statusMenuRef = useTemplateRef('statusMenuRef')
+const categoryMenuRef = useTemplateRef('categoryMenuRef')
+const statusButtonRef = useTemplateRef('statusButtonRef')
+const categoryButtonRef = useTemplateRef('categoryButtonRef')
+
 const statusMenuPositionTop = ref(true)
 const categoryMenuPositionTop = ref(true)
 
@@ -49,28 +58,37 @@ const handleDelete = () => {
 
 const handleDoubleClick = async () => {
   isEditing.value = true
-  editedText.value = props.todo.text
+  // editedText.value = props.todo.text
+  // input.value = props.todo.text
+  input.value = todoElemnt.value.text
   await nextTick()
-  inputRef.value?.focus()
+  textarea.value?.focus()
   // inputRef.value?.select()
 }
 
 const handleEditSave = () => {
-  const trimmedText = editedText.value.trim()
+  const trimmedText = input.value.trim()
   if (trimmedText && trimmedText !== props.todo.text) {
     emit('update:text', trimmedText)
   }
   isEditing.value = false
   showCategoryMenu.value = false
+  // ten temporally
+  todoElemnt.value.text = trimmedText
 }
 
 const handleEditCancel = () => {
   isEditing.value = false
-  editedText.value = props.todo.text
+  input.value = props.todo.text
   showCategoryMenu.value = false
 }
 
 const handleKeydown = (e: KeyboardEvent) => {
+  // shift enter to add new line
+  if (e.key === 'Enter' && e.shiftKey) {
+    return
+  }
+
   if (e.key === 'Enter') {
     handleEditSave()
   } else if (e.key === 'Escape') {
@@ -160,6 +178,13 @@ const getCategoryLabel = (category: TodoCategory): string => {
   }
   return labels[category]
 }
+
+//
+onClickOutside(textarea, () => {
+  if (isEditing.value) {
+    handleEditSave()
+  }
+})
 </script>
 
 <template>
@@ -221,23 +246,39 @@ const getCategoryLabel = (category: TodoCategory): string => {
         'text-emerald-700/70': todo.status === TodoStatus.Completed,
       }"
     >
-      {{ todo.text }}
+      <span></span>
+      <!-- {{ todo.text }} -->
+      {{ todoElemnt.text }}
     </div>
 
-    <input
-      v-else
-      ref="inputRef"
-      v-model="editedText"
-      @blur="handleEditSave"
+    <textarea
+      v-if="isEditing"
+      ref="textarea"
+      v-model="input"
       @keydown="handleKeydown"
       type="text"
-      class="flex-1 text-sm bg-transparent outline-none py-0.5"
+      class="flex-1 text-sm bg-transparent outline-none py-0.5 resize-none"
       :class="{
         'line-through text-slate-400 font-normal':
           todo.status === TodoStatus.Cancel || todo.status === TodoStatus.Completed,
         'text-emerald-700/70': todo.status === TodoStatus.Completed,
       }"
     />
+
+    <!-- <input -->
+    <!--   v-if="isEditing" -->
+    <!--   ref="inputRef" -->
+    <!--   v-model="editedText" -->
+    <!--   @blur="handleEditSave" -->
+    <!--   @keydown="handleKeydown" -->
+    <!--   type="text" -->
+    <!--   class="flex-1 text-sm bg-transparent outline-none py-0.5" -->
+    <!--   :class="{ -->
+    <!--     'line-through text-slate-400 font-normal': -->
+    <!--       todo.status === TodoStatus.Cancel || todo.status === TodoStatus.Completed, -->
+    <!--     'text-emerald-700/70': todo.status === TodoStatus.Completed, -->
+    <!--   }" -->
+    <!-- /> -->
 
     <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
       <div class="relative">
