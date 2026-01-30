@@ -1,34 +1,18 @@
+import { GoogleGenAI } from '@google/genai'
 import type { Todo } from '@modules/todo/domain/todo.entity'
-
-interface GeminiRequest {
-  contents: Array<{
-    parts: Array<{
-      text: string
-    }>
-  }>
-}
-
-interface GeminiResponse {
-  candidates: Array<{
-    content: {
-      parts: Array<{
-        text: string
-      }>
-    }
-  }>
-}
 
 class GeminiService {
   private apiKey: string = ''
   private model: string = 'gemini-1.5-flash'
-  private baseUrl: string = 'https://generativelanguage.googleapis.com/v1beta/models'
+  private ai: GoogleGenAI | null = null
 
   setApiKey(apiKey: string): void {
     this.apiKey = apiKey
+    this.ai = new GoogleGenAI({ apiKey: this.apiKey })
   }
 
   isConfigured(): boolean {
-    return !!this.apiKey
+    return !!this.apiKey && !!this.ai
   }
 
   private formatTasksForTemplate(tasks: Todo[]): string {
@@ -67,50 +51,17 @@ class GeminiService {
 
     const prompt = this.buildPrompt(template, tasks, date)
 
-    const request: GeminiRequest = {
-      contents: [
-        {
-          parts: [
-            {
-              text: prompt,
-            },
-          ],
-        },
-      ],
-    }
-
     try {
-      const response = await fetch(
-        `${this.baseUrl}/${this.model}:generateContent?key=${this.apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(request),
-        },
-      )
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error?.message || 'Failed to generate daily')
-      }
-
-      const data: GeminiResponse = await response.json()
-
-      if (
-        !data.candidates ||
-        data.candidates.length === 0 ||
-        !data.candidates[0]?.content ||
-        !data.candidates[0]?.content?.parts ||
-        !data.candidates[0]?.content?.parts[0]
-      ) {
+      const response = await this.ai!.models.generateContent({
+        model: this.model,
+        contents: prompt,
+      })
+      if (!response.text) {
         throw new Error('No content generated')
       }
-
-      return data.candidates[0]!.content.parts[0]!.text
+      return response.text
     } catch (error) {
-      console.error('Gemini API error:', error)
+      console.error('Gemini SDK error:', error)
       throw error
     }
   }
