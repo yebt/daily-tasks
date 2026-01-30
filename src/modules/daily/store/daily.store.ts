@@ -3,7 +3,6 @@ import { computed, ref } from 'vue'
 import { DailyService } from '../services/daily.service'
 import type { Daily } from '../domain/daily.entity'
 import { DEFAULT_DAILY_TEMPLATE } from '../domain/daily.entity'
-import { v4 as uuidv4 } from 'uuid'
 
 export const useDailyStore = defineStore('daily', () => {
   const dailies = ref<Daily[]>([])
@@ -29,17 +28,23 @@ export const useDailyStore = defineStore('daily', () => {
   }
 
   const createDaily = async (
-    daily: Omit<Daily, 'id' | 'createdAt' | 'generatedAt'>,
-  ): Promise<void> => {
+    daily: Omit<Daily, 'id' | 'createdAt' | 'generatedAt' | 'title'>,
+  ): Promise<Daily> => {
     try {
-      // const id = await DailyService.createDaily(daily)
-      const id = uuidv4()
-      dailies.value.unshift({
+      // Generate title with current date and time (format: YYYY-MM-DD HH:mm)
+      const now = new Date()
+      const title = now.toLocaleString('sv-SE').replace(' ', ' ').slice(0, 16)
+
+      // Create daily in Firebase
+      const createdDaily = await DailyService.createDaily({
         ...daily,
-        id,
-        createdAt: Date.now(),
-        generatedAt: Date.now(),
+        title,
       })
+
+      // Add to local state
+      dailies.value.unshift(createdDaily)
+
+      return createdDaily
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to create daily'
       console.error('Error creating daily:', e)
@@ -61,7 +66,7 @@ export const useDailyStore = defineStore('daily', () => {
   const deleteDailiesBatch = async (ids: string[]): Promise<void> => {
     try {
       await DailyService.deleteDailiesBatch(ids)
-      dailies.value = dailies.value.filter((d) => !ids.includes(d.id!))
+      dailies.value = dailies.value.filter((d) => !ids.includes(d.id))
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to delete dailies'
       console.error('Error deleting dailies:', e)

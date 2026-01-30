@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useTodoStore } from '@modules/todo/store/todo.store'
 import { useSettingsStore } from '@modules/settings/store/settings.store'
 import { useAuthStore } from '@modules/auth/stores/auth.store'
@@ -24,6 +25,7 @@ const props = defineProps<{
 
 const emit = defineEmits<Emits>()
 
+const router = useRouter()
 const todoStore = useTodoStore()
 const settingsStore = useSettingsStore()
 const authStore = useAuthStore()
@@ -138,7 +140,7 @@ const handleGenerate = async () => {
     // Save to store and Firebase
     if (!authStore.user?.uid) throw new Error('User not authenticated')
 
-    await dailyStore.createDaily({
+    const createdDaily = await dailyStore.createDaily({
       userId: authStore.user.uid,
       content,
       template: settingsStore.dailyTemplate,
@@ -147,6 +149,9 @@ const handleGenerate = async () => {
     })
 
     emit('close')
+
+    // Redirect to the newly created daily
+    await router.push(`/daily/${createdDaily.id}`)
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to generate daily'
     console.error('Error generating daily:', err)

@@ -14,15 +14,19 @@ import type { Daily } from '../domain/daily.entity'
 import { DAILY_COLLECTION } from '../domain/daily.entity'
 
 export class DailyService {
-  static async createDaily(
-    daily: Omit<Daily, 'id' | 'createdAt' | 'generatedAt'>,
-  ): Promise<string> {
+  static async createDaily(daily: Omit<Daily, 'id' | 'createdAt' | 'generatedAt'>): Promise<Daily> {
+    const now = Date.now()
     const docRef = await addDoc(collection(firebaseDb, DAILY_COLLECTION), {
       ...daily,
-      createdAt: Date.now(),
-      generatedAt: Date.now(),
+      createdAt: now,
+      generatedAt: now,
     })
-    return docRef.id
+    return {
+      ...daily,
+      id: docRef.id,
+      createdAt: now,
+      generatedAt: now,
+    }
   }
 
   static async getDailysByUser(userId: string): Promise<Daily[]> {

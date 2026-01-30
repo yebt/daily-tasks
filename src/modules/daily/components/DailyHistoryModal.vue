@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useAuthStore } from '@modules/auth/stores/auth.store'
 import { useDailyStore } from '../store/daily.store'
 import type { Daily } from '../domain/daily.entity'
@@ -30,18 +30,22 @@ const selectAll = computed({
   get: () => selectedIds.value.size === dailyStore.dailies.length && dailyStore.dailies.length > 0,
   set: (value) => {
     if (value) {
-      selectedIds.value = new Set(dailyStore.dailies.map((d) => d.id!))
+      selectedIds.value = new Set(dailyStore.dailies.map((d) => d.id))
     } else {
       selectedIds.value.clear()
     }
   },
 })
 
-onMounted(async () => {
-  if (props.isOpen && authStore.user?.uid && dailyStore.dailies.length === 0) {
-    await dailyStore.fetchDailies(authStore.user.uid)
-  }
-})
+// Fetch dailies when modal opens
+watch(
+  () => props.isOpen,
+  async (newVal) => {
+    if (newVal && authStore.user?.uid) {
+      await dailyStore.fetchDailies(authStore.user.uid)
+    }
+  },
+)
 
 const toggleSelect = (id: string) => {
   if (selectedIds.value.has(id)) {
@@ -185,41 +189,48 @@ const handleClose = () => {
               :key="daily.id"
               class="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow"
             >
-              <div class="flex items-start gap-3 mb-2">
+              <div class="flex items-start gap-3 mb-2 flex item items-center">
                 <input
-                  :checked="selectedIds.has(daily.id!)"
-                  @change="toggleSelect(daily.id!)"
+                  :checked="selectedIds.has(daily.id)"
+                  @change="toggleSelect(daily.id)"
                   type="checkbox"
                   class="w-4 h-4 rounded cursor-pointer accent-blue-500 mt-1"
                 />
 
                 <div class="flex-1">
-                  <p class="text-sm font-medium text-gray-900">{{ formatDate(daily.createdAt) }}</p>
+                  <RouterLink
+                    class="hover:(text-blue-600 underline) transition "
+                    :to="{ name: 'daily-view', params: { id: daily.id } }">
+                    {{ daily.id }}
+                  </RouterLink>
+                  <p class="text-sm font-medium text-gray-900">
+                    {{ formatDate(daily.createdAt) }}
+                  </p>
                   <p class="text-xs text-gray-500 mt-1">
                     {{ daily.tasksIncluded.length }} task(s) included
                   </p>
                 </div>
 
-                <div class="flex gap-2">
+                <div class="flex gap-2 items-baseline">
                   <button
-                    @click="copyToClipboard(daily.content, daily.id!)"
+                    @click="copyToClipboard(daily.content, daily.id)"
                     :class="[
-                      'p-2 rounded transition-all',
-                      copiedId === daily.id!
+                      'p-2 rounded transition-all flex',
+                      copiedId === daily.id
                         ? 'bg-green-100 text-green-600'
                         : 'text-gray-400 hover:text-blue-500 hover:bg-blue-50',
                     ]"
-                    :title="copiedId === daily.id! ? 'Copied!' : 'Copy to clipboard'"
+                    :title="copiedId === daily.id ? 'Copied!' : 'Copy to clipboard'"
                   >
                     <em
-                      :class="copiedId === daily.id! ? 'i-lucide-check' : 'i-lucide-copy'"
+                      :class="copiedId === daily.id ? 'i-lucide-check' : 'i-lucide-copy'"
                       class="w-4 h-4"
                     />
                   </button>
 
                   <button
-                    @click="handleDeleteDaily(daily.id!)"
-                    class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-all"
+                    @click="handleDeleteDaily(daily.id)"
+                    class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-all flex"
                     title="Delete daily"
                   >
                     <em class="i-lucide-trash-2 w-4 h-4" />

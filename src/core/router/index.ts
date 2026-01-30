@@ -2,6 +2,7 @@ import { authRoutes } from '@/modules/auth/infrastructure/router/auth.routes'
 import { createRouter, createWebHistory } from 'vue-router'
 import { authGuard } from './guards/auth.guard'
 import { todoRoutes } from '@/modules/todo/infrastructure/routes/todo.routes'
+import { dailyRoutes } from '@/modules/daily/infrastructure/routes/daily.routes'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +17,7 @@ const router = createRouter({
     // Imports
     ...authRoutes,
     ...todoRoutes,
+    ...dailyRoutes,
   ],
 })
 

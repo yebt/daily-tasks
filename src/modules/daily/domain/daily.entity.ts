@@ -1,11 +1,12 @@
 export interface Daily {
-  id?: string
+  id: string // UUID v4
   userId: string
   content: string
   template: string
   includeIncomplete: boolean
   tasksIncluded: string[] // IDs of tasks included in generation
-  createdAt: number
+  title: string // Date with time (e.g., "2025-01-30 14:30")
+  createdAt: number // Timestamp in milliseconds
   generatedAt: number // When AI generated it
 }
 
