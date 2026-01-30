@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useTodoStore } from '@modules/todo/store/todo.store'
 import { useSettingsStore } from '@modules/settings/store/settings.store'
 import { useAuthStore } from '@modules/auth/stores/auth.store'
@@ -11,7 +11,7 @@ interface Emits {
   (e: 'close'): void
 }
 
-defineProps<{
+const props = defineProps<{
   isOpen: boolean
 }>()
 
@@ -25,6 +25,24 @@ const dailyStore = useDailyStore()
 const includeIncomplete = ref(false)
 const isGenerating = ref(false)
 const error = ref<string | null>(null)
+const isLoadingSettings = ref(false)
+
+// Load settings when modal opens
+watch(
+  () => props.isOpen,
+  async (newVal) => {
+    if (newVal && authStore.user) {
+      isLoadingSettings.value = true
+      try {
+        await settingsStore.loadSettings()
+      } catch (err) {
+        console.error('Failed to load settings:', err)
+      } finally {
+        isLoadingSettings.value = false
+      }
+    }
+  },
+)
 
 const getTodayTasks = () => {
   return todoStore.todayTodos.filter((t) => t.category === TodoCategory.Today)
@@ -43,6 +61,11 @@ const canGenerate = () => {
 const handleGenerate = async () => {
   if (!canGenerate()) {
     error.value = 'No tasks to generate daily'
+    return
+  }
+
+  if (isLoadingSettings.value) {
+    error.value = 'Loading settings...'
     return
   }
 
@@ -145,13 +168,13 @@ const handleClose = () => {
           Cancel
         </button>
         <button
-          @click="handleGenerate"
-          :disabled="isGenerating || !canGenerate()"
-          class="flex-1 px-4 py-2 text-sm font-bold rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-        >
-          <em v-if="isGenerating" class="i-lucide-loader-2 w-4 h-4 animate-spin" />
-          {{ isGenerating ? 'Generating...' : 'Generate' }}
-        </button>
+           @click="handleGenerate"
+           :disabled="isGenerating || !canGenerate() || isLoadingSettings"
+           class="flex-1 px-4 py-2 text-sm font-bold rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+         >
+           <em v-if="isGenerating || isLoadingSettings" class="i-lucide-loader-2 w-4 h-4 animate-spin" />
+           {{ isLoadingSettings ? 'Loading...' : isGenerating ? 'Generating...' : 'Generate' }}
+         </button>
       </div>
     </div>
   </div>
