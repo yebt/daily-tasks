@@ -5,7 +5,7 @@ import { useSettingsStore } from '@modules/settings/store/settings.store'
 import { useAuthStore } from '@modules/auth/stores/auth.store'
 import { useDailyStore } from '../store/daily.store'
 import { geminiService } from '../services/gemini.service'
-import { TodoCategory } from '@modules/todo/domain/todo.entity'
+import { TodoCategory, TodoStatus } from '@modules/todo/domain/todo.entity'
 
 interface AvailableModel {
   name: string
@@ -19,6 +19,7 @@ interface Emits {
 
 const props = defineProps<{
   isOpen: boolean
+  openDayIndex: number
 }>()
 
 const emit = defineEmits<Emits>()
@@ -74,7 +75,9 @@ watch(
 )
 
 const getTodayTasks = () => {
-  return todoStore.todayTodos.filter((t) => t.category === TodoCategory.Today)
+  return todoStore
+    .getTodosByDay(props.openDayIndex)
+    .filter((t) => t.category === TodoCategory.Today)
 }
 
 const canGenerate = () => {
@@ -113,12 +116,21 @@ const handleGenerate = async () => {
 
     // Get tasks to include
     let tasksToInclude = getTodayTasks()
-    const tasksIncluded = tasksToInclude.map((t) => t.id!).filter(Boolean)
 
-    if (includeIncomplete.value && tasksToInclude.length === 0) {
-      // If includeIncomplete is checked but no today tasks, include all tasks
-      tasksToInclude = [...todoStore.nextTodos, ...todoStore.someDayTodos]
+    // If includeIncomplete is checked, also include incomplete tasks from the same day
+    if (includeIncomplete.value) {
+      const allDayTasks = todoStore.getTodosByDay(props.openDayIndex)
+      const incompleteTasksFromDay = allDayTasks.filter(
+        (t) =>
+          t.category === TodoCategory.Today &&
+          t.status !== TodoStatus.Completed &&
+          t.status !== TodoStatus.Cancel &&
+          !tasksToInclude.find((existing) => existing.id === t.id),
+      )
+      tasksToInclude = [...tasksToInclude, ...incompleteTasksFromDay]
     }
+
+    const tasksIncluded = tasksToInclude.map((t) => t.id!).filter(Boolean)
 
     // Generate content using Gemini
     const content = await geminiService.generateDaily(settingsStore.dailyTemplate, tasksToInclude)
@@ -175,12 +187,11 @@ const handleClose = () => {
               type="checkbox"
               class="w-4 h-4 rounded cursor-pointer accent-blue-500"
             />
-            <span class="text-sm text-gray-700">
-              Include incomplete tasks from other categories
-            </span>
+            <span class="text-sm text-gray-700"> Include incomplete tasks from the same day </span>
           </label>
           <p class="mt-2 text-xs text-gray-500">
-            This will include tasks from "Next" and "Someday" categories
+            This will include unfinished tasks from the current day that are not completed or
+            cancelled
           </p>
         </div>
 

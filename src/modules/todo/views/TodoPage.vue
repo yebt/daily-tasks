@@ -177,7 +177,11 @@ watch(
       @cancel="confirmModal.handleCancel()"
     />
     <SettingsModal :is-open="isSettingsOpen" @close="isSettingsOpen = false" />
-    <GenDailyModal :is-open="isGenDailyOpen" @close="isGenDailyOpen = false" />
+    <GenDailyModal
+      :is-open="isGenDailyOpen"
+      :open-day-index="openDay"
+      @close="isGenDailyOpen = false"
+    />
     <DailyHistoryModal :is-open="isDailyHistoryOpen" @close="isDailyHistoryOpen = false" />
     <div class="max-w-3xl mx-auto p-2 md:px-10">
       <div class="flex flex-col gap-1">
