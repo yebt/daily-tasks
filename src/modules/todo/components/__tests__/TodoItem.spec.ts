@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils'
 import TodoItem from '../TodoItem.vue'
 import { TodoStatus, TodoCategory } from '../../domain/todo.entity'
 import type { Todo } from '../../domain/todo.entity'
+import { Timestamp } from 'firebase/firestore'
 
 describe('TodoItem', () => {
   const mockTodo: Todo = {
@@ -11,8 +12,8 @@ describe('TodoItem', () => {
     status: TodoStatus.Waiting,
     category: TodoCategory.Today,
     userId: 'user123',
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    createdAt: new Timestamp(Math.floor(Date.now() / 1000), 0),
+    updatedAt: new Timestamp(Math.floor(Date.now() / 1000), 0),
   }
 
   it('renders task text', () => {

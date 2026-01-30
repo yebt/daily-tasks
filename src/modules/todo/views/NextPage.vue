@@ -18,7 +18,7 @@ const isDeleting = ref(false)
 const isSettingsOpen = ref(false)
 
 const nextTodos = computed(() => {
-  return [...todoStore.nextTodos].sort((a, b) => b.createdAt - a.createdAt)
+  return [...todoStore.nextTodos].sort((a, b) => b.createdAt.seconds - a.createdAt.seconds)
 })
 
 const selectAll = computed({

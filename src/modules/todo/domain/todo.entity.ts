@@ -1,3 +1,5 @@
+import type { Timestamp } from "firebase/firestore"
+
 // export type TodoStatus = 'waiting' | 'in-progress' | 'completed' | 'delegated' | 'appointment' | 'cancel' | string
 export enum TodoStatus {
   Waiting = 'WAITING',
@@ -68,6 +70,6 @@ export interface Todo {
   // dayOfWeek?: number // 0-6 (Sunday-Saturday) for "Today" accordions
    dayOfWeek?: WeekDayIndex // 0-6 (Sunday-Saturday) for "Today" accordions
   userId: string
-  createdAt: number
-  updatedAt: number
+  createdAt: Timestamp
+  updatedAt: Timestamp
 }
