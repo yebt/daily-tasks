@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useTodoStore } from '../store/todo.store'
 import { TodoService } from '../services/todo.service'
 import {
@@ -22,6 +22,21 @@ import DailyHistoryModal from '@modules/daily/components/DailyHistoryModal.vue'
 const days = Object.values(WeekDays).filter((v) => typeof v === 'string') as string[]
 
 const currentDay = new Date().getDay()
+const dateOfCurrentDay = computed(() => {
+  const today = new Date()
+  const diff = currentDay - today.getDay()
+  const targetDate = new Date(today)
+  targetDate.setDate(today.getDate() + diff)
+  return targetDate
+})
+
+const getFormattedDateOfTheDay = (dayIndex: number) => {
+  const today = new Date()
+  const diff = dayIndex - today.getDay()
+  const targetDate = new Date(today)
+  targetDate.setDate(today.getDate() + diff)
+  return targetDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+}
 
 //
 const todoStore = useTodoStore()
@@ -188,7 +203,7 @@ watch(
         <TransitionGroup name="list">
           <template v-for="(day, index) in days" :key="day">
             <section v-if="index === currentDay || showAllDays" class="transition-all duration-200">
-              <Transition name="list">
+              <Transition >
                 <button
                   @click="toggleDay(index)"
                   v-if="showAllDays"
@@ -217,10 +232,17 @@ watch(
                       {{ todoStore.getTodosByDay(index).length }}
                     </span>
                   </div>
-                  <em
-                    class="i-lucide-chevron-down w-4 h-4 transition-transform text-gray-400"
-                    :class="{ 'rotate-180 text-blue-600': openDay === index }"
-                  />
+
+                  <div class="text-xs text-gray-400 flex items-center gap-2">
+                    <span>
+                      {{ getFormattedDateOfTheDay(index) }}
+                    </span>
+
+                    <em
+                      class="i-lucide-chevron-down w-4 h-4 transition-transform text-gray-400"
+                      :class="{ 'rotate-180 text-blue-600': openDay === index }"
+                    />
+                  </div>
                 </button>
               </Transition>
 
@@ -239,7 +261,7 @@ watch(
                 </div>
 
                 <div class="space-y-1">
-                  <TransitionGroup name="vt-fade">
+                  <TransitionGroup name="fade">
                     <TodoItem
                       v-for="todo in sortTodos(todoStore.getTodosByDay(index))"
                       :key="todo.id"
