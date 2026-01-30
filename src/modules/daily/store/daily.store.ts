@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { DailyService } from '../services/daily.service'
 import type { Daily } from '../domain/daily.entity'
 import { DEFAULT_DAILY_TEMPLATE } from '../domain/daily.entity'
+import { v4 as uuidv4 } from 'uuid'
 
 export const useDailyStore = defineStore('daily', () => {
   const dailies = ref<Daily[]>([])
@@ -31,7 +32,8 @@ export const useDailyStore = defineStore('daily', () => {
     daily: Omit<Daily, 'id' | 'createdAt' | 'generatedAt'>,
   ): Promise<void> => {
     try {
-      const id = await DailyService.createDaily(daily)
+      // const id = await DailyService.createDaily(daily)
+      const id = uuidv4()
       dailies.value.unshift({
         ...daily,
         id,

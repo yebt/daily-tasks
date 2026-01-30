@@ -60,17 +60,25 @@ class GeminiService {
     const dateFormatted = date.toLocaleDateString('es-ES', {
       weekday: 'long',
       year: 'numeric',
-      month: 'long',
+      month: 'short',
       day: 'numeric',
     })
 
-    let prompt = template.replace('{{fecha}}', dateFormatted)
+    const prompt = `
+Tu tarea es generar el reporte del dayli siguiendo la plantilla suministrada. La lsita de las\nsolo responde con el la template llena. Organiza cada tarea para mejorar la redacción y hacerla algo tecnica sin sonar rebuscada
 
-    // If template contains {{tareas}}, replace with formatted tasks
-    if (prompt.includes('{{tareas}}')) {
-      prompt = prompt.replace('{{tareas}}', this.formatTasksForTemplate(tasks))
-    }
+## Información:
+Date: ${dateFormatted}
+Tareas:
+${this.formatTasksForTemplate(tasks)}
 
+## Plantilla:
+${template}
+
+NOTA: Asegúrate de mantener el formato y la estructura de la plantilla proporcionada.
+No responndas mas cosas aparte de la plantilla completa.
+---
+`
     return prompt
   }
 
@@ -84,16 +92,41 @@ class GeminiService {
     }
 
     const prompt = this.buildPrompt(template, tasks, date)
+    const schema = {
+      description: 'Generar un título y contenido de plantilla',
+      type: 'object',
+      properties: {
+        title: {
+          type: 'string',
+          description: 'El título descriptivo',
+        },
+        templateContent: {
+          type: 'string',
+          description: 'El cuerpo o contenido de la plantilla en markdown',
+        },
+      },
+      required: ['title', 'templateContent'],
+    }
 
     try {
       const response = await this.ai!.models.generateContent({
         model: this.model,
         contents: prompt,
+        config: {
+          responseMimeType: 'application/json',
+          responseJsonSchema: schema,
+        },
       })
+
       if (!response.text) {
         throw new Error('No content generated')
       }
-      return response.text
+
+
+      const datos = JSON.parse(response.text)
+
+      // return response.text
+      return datos.templateContent
     } catch (error) {
       console.error('Gemini SDK error:', error)
       throw error
