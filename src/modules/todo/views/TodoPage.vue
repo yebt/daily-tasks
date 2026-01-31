@@ -12,7 +12,6 @@ import {
 import { useAuthStore } from '@/modules/auth/stores/auth.store.ts'
 import { useConfirmModal } from '@/shared/design-system/composables/useConfirmModal'
 import ConfirmModal from '@/shared/design-system/components/ConfirmModal.vue'
-import SettingsModal from '@/modules/settings/components/SettingsModal.vue'
 import TodoHeader from '../components/TodoHeader.vue'
 import TodoItem from '../components/TodoItem.vue'
 import GenDailyModal from '@modules/daily/components/GenDailyModal.vue'
@@ -48,7 +47,6 @@ const openDay = ref<number>(currentDay)
 const newTaskText = ref('')
 const showAllDays = ref(false)
 const isTransferring = ref(false)
-const isSettingsOpen = ref(false)
 const isGenDailyOpen = ref(false)
 const isDailyHistoryOpen = ref(false)
 
@@ -161,7 +159,6 @@ watch(
       :all-days-enabled="showAllDays"
       :task-count="todoStore.todayTodos.length"
       @toggle-all-days="showAllDays = !showAllDays"
-      @open-settings="isSettingsOpen = true"
     >
       <template #extra-buttons>
         <button
@@ -192,7 +189,6 @@ watch(
       @confirm="confirmModal.handleConfirm()"
       @cancel="confirmModal.handleCancel()"
     />
-    <SettingsModal :is-open="isSettingsOpen" @close="isSettingsOpen = false" />
     <GenDailyModal
       :is-open="isGenDailyOpen"
       :open-day-index="openDay"

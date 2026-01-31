@@ -12,7 +12,6 @@ interface Props {
 
 interface Emits {
   'toggle-all-days': []
-  'open-settings': []
 }
 
 withDefaults(defineProps<Props>(), {
@@ -48,8 +47,9 @@ const handleToggleAllDays = () => {
   emit('toggle-all-days')
 }
 
-const handleOpenSettings = () => {
-  emit('open-settings')
+const handleGoToSettings = (): void => {
+  showLogoutMenu.value = false
+  router.push({ name: 'settings' })
 }
 
 const handleLogout = async (): Promise<void> => {
@@ -93,14 +93,6 @@ const handleLogout = async (): Promise<void> => {
             {{ allDaysEnabled ? 'Week view' : 'Today' }}
           </button>
 
-          <button
-            @click="handleOpenSettings"
-            class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
-            title="Settings"
-          >
-            <em class="i-lucide-settings w-4 h-4" />
-          </button>
-
           <!-- Logout Menu -->
           <div class="relative">
             <button
@@ -119,6 +111,13 @@ const handleLogout = async (): Promise<void> => {
                 <div class="px-4 py-3 border-b border-gray-100">
                   <p class="text-sm font-medium text-gray-900">{{ authStore.user?.email }}</p>
                 </div>
+                <button
+                  @click="handleGoToSettings"
+                  class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-2 border-b border-gray-100"
+                >
+                  <em class="i-lucide-settings w-4 h-4" />
+                  Settings
+                </button>
                 <button
                   @click="handleLogout"
                   class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center gap-2"
