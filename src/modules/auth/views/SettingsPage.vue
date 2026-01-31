@@ -148,7 +148,7 @@ const handleBack = (): void => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-dvh bg-gray-50">
     <!-- Header -->
     <div class="border-b border-gray-200 bg-white sticky top-0 z-40">
       <div class="max-w-2xl mx-auto px-6 py-6">

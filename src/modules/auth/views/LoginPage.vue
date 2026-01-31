@@ -64,7 +64,7 @@ const handleLogin = async (): Promise<void> => {
 
 <template>
   <div
-    class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-gray-100 px-4 py-8 sm:px-6"
+    class="min-h-svh flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-gray-100 px-4 py-8 sm:px-6"
   >
     <div class="w-full max-w-sm p-6 sm:p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
       <div class="flex flex-col items-center mb-8">

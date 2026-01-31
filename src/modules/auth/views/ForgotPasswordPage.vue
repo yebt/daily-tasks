@@ -29,7 +29,7 @@ const handleReset = async function () {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="min-h-dvh flex items-center justify-center bg-gray-50 px-4">
     <div class="max-w-md w-full p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
       <!-- Success state -->
       <div v-if="sent" class="text-center animate-fade-in">
