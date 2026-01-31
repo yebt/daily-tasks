@@ -32,7 +32,6 @@ input.value = todoElemnt.value.text
 
 const showCategoryMenu = ref(false)
 const showStatusMenu = ref(false)
-// const containerRef = ref<HTMLDivElement>()
 
 // const inputRef = useTemplateRef('inputRef')
 const statusMenuRef = useTemplateRef('statusMenuRef')
@@ -189,7 +188,6 @@ onClickOutside(textarea, () => {
 
 <template>
   <div
-    ref="containerRef"
     :class="[
       classesTodoStatus[todo.status],
       isEditing
