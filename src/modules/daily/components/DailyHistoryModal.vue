@@ -143,7 +143,7 @@ const handleClose = () => {
     <div
       class="bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col"
     >
-      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <div class="flex items-center justify-between p-6 border-b border-gray-200 flex ">
         <h2 class="text-xl font-bold text-gray-900">Daily History</h2>
         <button
           @click="handleClose"

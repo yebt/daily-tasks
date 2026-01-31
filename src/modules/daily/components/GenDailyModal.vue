@@ -170,11 +170,12 @@ const handleClose = () => {
 <template>
   <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
     <div class="bg-white rounded-lg shadow-lg max-w-md w-full mx-4 p-6">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-4 flex items-start ">
         <h2 class="text-xl font-bold text-gray-900">Generate Daily</h2>
         <button
           @click="handleClose"
-          class="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+          class="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors
+          flex"
         >
           <em class="i-lucide-x w-5 h-5" />
         </button>
