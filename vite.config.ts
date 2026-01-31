@@ -19,7 +19,14 @@ const alias = Object.entries(aliases).reduce((acc: Record<string, string>, [aKey
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [UnoCSS(), vue(), vueDevTools()],
+  plugins: [
+    UnoCSS(),
+    vue(),
+    vueDevTools({
+      // # export LAUNCH_EDITOR=nvsr
+      // launchEditor: 'nvsr'
+    }),
+  ],
   resolve: {
     alias,
     // alias: {
