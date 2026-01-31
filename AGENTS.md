@@ -341,6 +341,8 @@ const handleLogin = async (): Promise<void> => {
 - Keep tests focused on a single behavior
 - Never test multiple layers in one test file
 
+- All programming is in english
+
 ## Key Architectural Patterns
 
 ### Real-Time Data & VueFire
@@ -391,3 +393,4 @@ const handleLogin = async (): Promise<void> => {
 - Never commit code with failing linters or tests
 - Use relative paths for local imports within modules
 - Use absolute path aliases across module boundaries
+
