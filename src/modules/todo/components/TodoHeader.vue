@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@modules/auth/stores/auth.store'
 
 interface Props {
   title: string
@@ -24,6 +25,9 @@ const emit = defineEmits<Emits>()
 
 const router = useRouter()
 const route = useRoute()
+const authStore = useAuthStore()
+
+const showLogoutMenu = ref(false)
 
 const tabs: Array<{ name: string; path: string; icon: string }> = [
   { name: 'Today', path: '/todos', icon: 'i-lucide:target' },
@@ -46,6 +50,12 @@ const handleToggleAllDays = () => {
 
 const handleOpenSettings = () => {
   emit('open-settings')
+}
+
+const handleLogout = async (): Promise<void> => {
+  showLogoutMenu.value = false
+  await authStore.logout()
+  router.push('/login')
 }
 </script>
 
@@ -90,6 +100,35 @@ const handleOpenSettings = () => {
           >
             <em class="i-lucide-settings w-4 h-4" />
           </button>
+
+          <!-- Logout Menu -->
+          <div class="relative">
+            <button
+              @click="showLogoutMenu = !showLogoutMenu"
+              class="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
+              title="User menu"
+            >
+              <em class="i-lucide-user w-4 h-4" />
+            </button>
+
+            <transition name="dropdown">
+              <div
+                v-if="showLogoutMenu"
+                class="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+              >
+                <div class="px-4 py-3 border-b border-gray-100">
+                  <p class="text-sm font-medium text-gray-900">{{ authStore.user?.email }}</p>
+                </div>
+                <button
+                  @click="handleLogout"
+                  class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center gap-2"
+                >
+                  <em class="i-lucide-log-out w-4 h-4" />
+                  Logout
+                </button>
+              </div>
+            </transition>
+          </div>
         </div>
       </div>
 
@@ -123,5 +162,20 @@ const handleOpenSettings = () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.15s ease;
+}
+
+.dropdown-enter-from {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 </style>

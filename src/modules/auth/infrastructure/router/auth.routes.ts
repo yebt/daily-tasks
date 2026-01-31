@@ -8,6 +8,12 @@ export const authRoutes: RouteRecordRaw[] = [
     meta: { requiresNoAuth: true },
   },
   {
+    path: '/sign-up',
+    name: 'sign-up',
+    component: () => import('@modules/auth/views/SignUpPage.vue'),
+    meta: { requiresNoAuth: true },
+  },
+  {
     path: '/forgot-password',
     name: 'forgot-password',
     component: () => import('@modules/auth/views/ForgotPasswordPage.vue'),

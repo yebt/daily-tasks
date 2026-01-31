@@ -1,6 +1,7 @@
 import {
   browserLocalPersistence,
   browserSessionPersistence,
+  createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   setPersistence,
   signInWithEmailAndPassword,
@@ -20,6 +21,13 @@ export const useAuthStore = defineStore('auth', () => {
     await setPersistence(auth, persistence)
     return signInWithEmailAndPassword(auth, email, passwrd)
   }
+
+  const signup = async (email: string, passwrd: string, remember: boolean) => {
+    const persistence = remember ? browserLocalPersistence : browserSessionPersistence
+    await setPersistence(auth, persistence)
+    return createUserWithEmailAndPassword(auth, email, passwrd)
+  }
+
   const logout = () => signOut(auth)
   const resetPassword = (mail: string) => sendPasswordResetEmail(auth, mail)
 
@@ -29,6 +37,7 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     isAuthenticated,
     login,
+    signup,
     logout,
     resetPassword,
   }
