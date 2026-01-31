@@ -15,6 +15,10 @@ const rememberMe = ref(false)
 const loading = ref(false)
 const errMsg = ref('')
 
+const generateUsernameFromEmail = (emailAddress: string): string => {
+  return emailAddress.split('@')[0] || emailAddress
+}
+
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof FirebaseError) {
     const errorCode = error.code
@@ -52,7 +56,8 @@ const handleSignUp = async (): Promise<void> => {
 
   try {
     loading.value = true
-    await authStore.signup(email.value, password.value, rememberMe.value)
+    const generatedUsername = generateUsernameFromEmail(email.value)
+    await authStore.signup(email.value, password.value, rememberMe.value, generatedUsername)
     router.push('/')
   } catch (error) {
     console.error('Sign up error:', error)
