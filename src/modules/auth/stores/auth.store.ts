@@ -6,6 +6,8 @@ import {
   setPersistence,
   signInWithEmailAndPassword,
   signOut,
+  updatePassword,
+  updateProfile,
 } from 'firebase/auth'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed } from 'vue'
@@ -31,6 +33,16 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = () => signOut(auth)
   const resetPassword = (mail: string) => sendPasswordResetEmail(auth, mail)
 
+  const changePassword = async (newPassword: string): Promise<void> => {
+    if (!user.value) throw new Error('No user logged in')
+    return updatePassword(user.value, newPassword)
+  }
+
+  const updateUsername = async (newUsername: string): Promise<void> => {
+    if (!user.value) throw new Error('No user logged in')
+    return updateProfile(user.value, { displayName: newUsername })
+  }
+
   const isAuthenticated = computed(() => !!user.value)
 
   return {
@@ -40,6 +52,8 @@ export const useAuthStore = defineStore('auth', () => {
     signup,
     logout,
     resetPassword,
+    changePassword,
+    updateUsername,
   }
 })
 
