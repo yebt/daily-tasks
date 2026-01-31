@@ -3,6 +3,10 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth.store'
 import { ref, computed } from 'vue'
 import { FirebaseError } from 'firebase/app'
+import FormInput from '@shared/design-system/components/FormInput.vue'
+import PasswordInput from '@shared/design-system/components/PasswordInput.vue'
+import PasswordConfirmInput from '@shared/design-system/components/PasswordConfirmInput.vue'
+import PasswordRequirements from '@shared/design-system/components/PasswordRequirements.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -14,29 +18,16 @@ const rememberMe = ref(false)
 
 const loading = ref(false)
 const errMsg = ref('')
-const showPassword = ref(false)
 
-interface PasswordRequirements {
-  length: boolean
-  uppercase: boolean
-  lowercase: boolean
-  digit: boolean
-}
-
-const passwordRequirements = computed<PasswordRequirements>(() => ({
-  length: password.value.length >= 8,
-  uppercase: /[A-Z]/.test(password.value),
-  lowercase: /[a-z]/.test(password.value),
-  digit: /\d/.test(password.value),
-}))
-
-const isPasswordValid = computed<boolean>(
-  () =>
-    passwordRequirements.value.length &&
-    passwordRequirements.value.uppercase &&
-    passwordRequirements.value.lowercase &&
-    passwordRequirements.value.digit,
-)
+const isPasswordValid = computed<boolean>(() => {
+  const req = {
+    length: password.value.length >= 8,
+    uppercase: /[A-Z]/.test(password.value),
+    lowercase: /[a-z]/.test(password.value),
+    digit: /\d/.test(password.value),
+  }
+  return req.length && req.uppercase && req.lowercase && req.digit
+})
 
 const passwordsMatch = computed<boolean>(() => password.value === confirmPassword.value)
 
@@ -93,23 +84,6 @@ const handleSignUp = async (): Promise<void> => {
 }
 </script>
 
-<style scoped>
-.slide-fade-enter-active,
-.slide-fade-leave-active {
-  transition: all 0.3s ease;
-}
-
-.slide-fade-enter-from {
-  transform: translateY(-10px);
-  opacity: 0;
-}
-
-.slide-fade-leave-to {
-  transform: translateY(-10px);
-  opacity: 0;
-}
-</style>
-
 <template>
   <div
     class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-gray-100 px-4 py-8 sm:px-6"
@@ -135,149 +109,38 @@ const handleSignUp = async (): Promise<void> => {
       </transition>
 
       <form @submit.prevent="handleSignUp" class="space-y-4 sm:space-y-5">
+        <FormInput
+          v-model="email"
+          type="email"
+          label="Email"
+          icon="i-lucide-mail"
+          placeholder="you@email.com"
+          :disabled="loading"
+          required
+        />
+
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-              <div class="i-lucide-mail w-5 h-5" />
-            </span>
-            <input
-              v-model="email"
-              type="email"
-              required
-              :disabled="loading"
-              placeholder="you@email.com"
-              class="w-full pl-10 pr-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800/20 focus:border-slate-800 outline-none transition disabled:bg-gray-50 disabled:text-gray-500"
-            />
+          <PasswordInput
+            v-model="password"
+            label="Password"
+            placeholder="Create a strong password"
+            :disabled="loading"
+            required
+          />
+
+          <div class="mt-4">
+            <PasswordRequirements :password="password" />
           </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-              <div class="i-lucide-lock w-5 h-5" />
-            </span>
-            <input
-              v-model="password"
-              :type="showPassword ? 'text' : 'password'"
-              required
-              :disabled="loading"
-              placeholder="Create a strong password"
-              class="w-full pl-10 pr-10 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-800/20 focus:border-slate-800 outline-none transition disabled:bg-gray-50 disabled:text-gray-500"
-            />
-            <button
-              type="button"
-              @click="showPassword = !showPassword"
-              class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-              :disabled="loading"
-            >
-              <em :class="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'" class="w-5 h-5" />
-            </button>
-          </div>
-
-          <!-- Password Requirements Checklist -->
-          <div class="mt-3 space-y-2">
-            <div
-              :class="[
-                'flex items-center gap-2 text-xs',
-                passwordRequirements.length ? 'text-green-600' : 'text-gray-400',
-              ]"
-            >
-              <em
-                :class="passwordRequirements.length ? 'i-lucide-check-circle' : 'i-lucide-circle'"
-                class="w-4 h-4"
-              />
-              At least 8 characters
-            </div>
-            <div
-              :class="[
-                'flex items-center gap-2 text-xs',
-                passwordRequirements.uppercase ? 'text-green-600' : 'text-gray-400',
-              ]"
-            >
-              <em
-                :class="passwordRequirements.uppercase ? 'i-lucide-check-circle' : 'i-lucide-circle'"
-                class="w-4 h-4"
-              />
-              At least one uppercase letter (A-Z)
-            </div>
-            <div
-              :class="[
-                'flex items-center gap-2 text-xs',
-                passwordRequirements.lowercase ? 'text-green-600' : 'text-gray-400',
-              ]"
-            >
-              <em
-                :class="passwordRequirements.lowercase ? 'i-lucide-check-circle' : 'i-lucide-circle'"
-                class="w-4 h-4"
-              />
-              At least one lowercase letter (a-z)
-            </div>
-            <div
-              :class="[
-                'flex items-center gap-2 text-xs',
-                passwordRequirements.digit ? 'text-green-600' : 'text-gray-400',
-              ]"
-            >
-              <em
-                :class="passwordRequirements.digit ? 'i-lucide-check-circle' : 'i-lucide-circle'"
-                class="w-4 h-4"
-              />
-              At least one number (0-9)
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Confirm password</label>
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-              <div class="i-lucide-lock w-5 h-5" />
-            </span>
-            <input
-              v-model="confirmPassword"
-              :type="showPassword ? 'text' : 'password'"
-              required
-              :disabled="loading"
-              placeholder="••••••••"
-              :class="[
-                'w-full pl-10 pr-10 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:border-slate-800 outline-none transition disabled:bg-gray-50 disabled:text-gray-500',
-                confirmPassword && password
-                  ? passwordsMatch
-                    ? 'border-green-300 focus:ring-green-500/20'
-                    : 'border-red-300 focus:ring-red-500/20'
-                  : 'border-gray-300 focus:ring-slate-800/20',
-              ]"
-            />
-            <div class="absolute inset-y-0 right-3 flex items-center gap-2">
-              <button
-                type="button"
-                @click="showPassword = !showPassword"
-                class="text-gray-400 hover:text-gray-600 transition-colors"
-                :disabled="loading"
-              >
-                <em
-                  :class="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-                  class="w-5 h-5"
-                />
-              </button>
-              <em
-                v-if="confirmPassword && password"
-                :class="passwordsMatch ? 'i-lucide-check-circle text-green-600' : 'i-lucide-x-circle text-red-600'"
-                class="w-5 h-5"
-              />
-            </div>
-          </div>
-          <transition name="slide-fade">
-            <p
-              v-if="confirmPassword && password && !passwordsMatch"
-              class="mt-1.5 text-xs text-red-600"
-            >
-              Passwords do not match
-            </p>
-          </transition>
-        </div>
+        <PasswordConfirmInput
+          v-model="confirmPassword"
+          :password="password"
+          label="Confirm password"
+          placeholder="••••••••"
+          :disabled="loading"
+          required
+        />
 
         <label class="flex items-center gap-2 text-gray-600 cursor-pointer text-sm pt-2">
           <input
