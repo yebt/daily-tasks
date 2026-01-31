@@ -122,7 +122,6 @@ No responndas mas cosas aparte de la plantilla completa.
         throw new Error('No content generated')
       }
 
-
       const datos = JSON.parse(response.text)
 
       // return response.text

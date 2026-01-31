@@ -23,8 +23,7 @@ const getErrorMessage = (error: unknown): string => {
       'auth/wrong-password': 'Incorrect password',
       'auth/invalid-credential': 'Invalid email or password',
       'auth/user-disabled': 'This account has been disabled',
-      'auth/too-many-requests':
-        'Too many failed attempts. Please try again later',
+      'auth/too-many-requests': 'Too many failed attempts. Please try again later',
     }
     return errorMessages[errorCode] || 'Sign in failed. Please try again'
   }
@@ -122,7 +121,9 @@ const handleLogin = async (): Promise<void> => {
           </div>
         </div>
 
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-sm pt-2">
+        <div
+          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between text-sm pt-2"
+        >
           <label class="flex items-center gap-2 text-gray-600 cursor-pointer">
             <input
               type="checkbox"

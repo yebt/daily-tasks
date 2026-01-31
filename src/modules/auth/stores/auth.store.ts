@@ -24,12 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
     return signInWithEmailAndPassword(auth, email, passwrd)
   }
 
-  const signup = async (
-    email: string,
-    passwrd: string,
-    remember: boolean,
-    username?: string,
-  ) => {
+  const signup = async (email: string, passwrd: string, remember: boolean, username?: string) => {
     const persistence = remember ? browserLocalPersistence : browserSessionPersistence
     await setPersistence(auth, persistence)
     const userCredential = await createUserWithEmailAndPassword(auth, email, passwrd)

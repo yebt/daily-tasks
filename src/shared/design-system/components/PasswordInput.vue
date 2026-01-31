@@ -49,7 +49,9 @@ const showPassword = ref(false)
           'w-full border rounded-lg focus:ring-2 focus:border-slate-800 outline-none transition',
           'py-2.5 sm:py-3',
           showIcon ? 'pl-10' : 'pl-4',
-          error ? 'pr-10 border-red-300 focus:ring-red-500/20' : 'pr-10 border-gray-300 focus:ring-slate-800/20',
+          error
+            ? 'pr-10 border-red-300 focus:ring-red-500/20'
+            : 'pr-10 border-gray-300 focus:ring-slate-800/20',
           'disabled:bg-gray-50 disabled:text-gray-500',
         ]"
       />

@@ -143,7 +143,7 @@ const handleClose = () => {
     <div
       class="bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col"
     >
-      <div class="flex items-center justify-between p-6 border-b border-gray-200 flex ">
+      <div class="flex items-center justify-between p-6 border-b border-gray-200 flex">
         <h2 class="text-xl font-bold text-gray-900">Daily History</h2>
         <button
           @click="handleClose"
@@ -199,8 +199,9 @@ const handleClose = () => {
 
                 <div class="flex-1">
                   <RouterLink
-                    class="hover:(text-blue-600 underline) transition "
-                    :to="{ name: 'daily-view', params: { id: daily.id } }">
+                    class="hover:(text-blue-600 underline) transition"
+                    :to="{ name: 'daily-view', params: { id: daily.id } }"
+                  >
                     {{ daily.id }}
                   </RouterLink>
                   <p class="text-sm font-medium text-gray-900">

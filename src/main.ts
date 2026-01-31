@@ -13,8 +13,7 @@ const app = createApp(App)
 const pinia = createPinia()
 
 // load if is in production
-if (import.meta.env.PROD)
-  loadSentry(app, router, pinia)
+if (import.meta.env.PROD) loadSentry(app, router, pinia)
 
 app.use(VueFire, {
   firebaseApp,

@@ -327,7 +327,13 @@ const handleBack = (): void => {
             <div class="flex gap-3 pt-4">
               <button
                 @click="handleChangePassword"
-                :disabled="!currentPassword || !newPassword || !confirmPassword || !isPasswordValid || isChangingPassword"
+                :disabled="
+                  !currentPassword ||
+                  !newPassword ||
+                  !confirmPassword ||
+                  !isPasswordValid ||
+                  isChangingPassword
+                "
                 class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
               >
                 <em v-if="isChangingPassword" class="i-lucide-loader-2 w-4 h-4 animate-spin" />
@@ -361,12 +367,13 @@ const handleBack = (): void => {
                   class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                   type="button"
                 >
-                  <em :class="apiKeyVisible ? 'i-lucide-eye-off' : 'i-lucide-eye'" class="w-4 h-4" />
+                  <em
+                    :class="apiKeyVisible ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                    class="w-4 h-4"
+                  />
                 </button>
               </div>
-              <p class="mt-2 text-xs text-gray-500">
-                Your API key is stored securely in Firestore
-              </p>
+              <p class="mt-2 text-xs text-gray-500">Your API key is stored securely in Firestore</p>
             </div>
 
             <div v-if="settingsStore.error" class="p-3 bg-red-50 border border-red-200 rounded-lg">

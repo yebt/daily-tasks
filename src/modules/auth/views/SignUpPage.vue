@@ -43,8 +43,7 @@ const getErrorMessage = (error: unknown): string => {
       'auth/email-already-in-use': 'This email is already registered',
       'auth/weak-password': 'Password does not meet requirements',
       'auth/operation-not-allowed': 'Sign up is not enabled',
-      'auth/too-many-requests':
-        'Too many attempts. Please try again later',
+      'auth/too-many-requests': 'Too many attempts. Please try again later',
     }
     return errorMessages[errorCode] || 'Sign up failed. Please try again'
   }

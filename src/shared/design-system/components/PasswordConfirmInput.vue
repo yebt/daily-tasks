@@ -71,7 +71,11 @@ const hasContent = computed(() => props.modelValue.length > 0 && props.password.
         </button>
         <em
           v-if="hasContent"
-          :class="passwordsMatch ? 'i-lucide-check-circle text-green-600' : 'i-lucide-x-circle text-red-600'"
+          :class="
+            passwordsMatch
+              ? 'i-lucide-check-circle text-green-600'
+              : 'i-lucide-x-circle text-red-600'
+          "
           class="w-5 h-5"
         />
       </div>
