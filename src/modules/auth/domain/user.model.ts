@@ -3,4 +3,5 @@ export interface UserEntity {
   email: string | null
   displayName: string | null
   photoURL: string | null
+  username?: string
 }
