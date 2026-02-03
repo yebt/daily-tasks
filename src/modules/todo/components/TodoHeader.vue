@@ -64,9 +64,9 @@ const handleLogout = async (): Promise<void> => {
     <div class="max-w-6xl mx-auto px-6 py-6">
       <!-- Title and Controls Row -->
       <div class="flex items-center justify-between mb-6">
-        <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">{{ title }}</h1>
+        <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight text-nowrap">{{ title }}</h1>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 flex-wrap justify-end ">
           <slot name="extra-buttons" />
 
           <transition name="fade">
