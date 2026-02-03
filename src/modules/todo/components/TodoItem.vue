@@ -254,7 +254,6 @@ onClickOutside(textarea, () => {
       ref="textarea"
       v-model="input"
       @keydown="handleKeydown"
-      type="text"
       class="flex-1 text-sm bg-transparent outline-none py-0.5 resize-none"
       :class="{
         'line-through text-slate-400 font-normal':
