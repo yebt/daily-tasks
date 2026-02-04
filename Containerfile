@@ -11,7 +11,7 @@ COPY . .
 RUN bun run build
 
 # Etapa 2: Producción con Caddy
-FROM caddy:2-alpine AS production-stage
+FROM caddy:2.11-alpine AS production-stage
 
 # Copiamos los archivos compilados desde la etapa anterior
 COPY --from=build-stage /app/dist /usr/share/caddy
