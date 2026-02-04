@@ -1,0 +1,11 @@
+# vim: filetype=caddy
+:80 {
+    root * /usr/share/caddy
+    file_server
+    
+    # Soporte para Vue Router (History Mode)
+    try_files {path} /index.html
+    
+    # Opcional: Compresión gzip para mejorar velocidad
+    encode gzip
+}
