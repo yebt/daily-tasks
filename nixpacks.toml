@@ -1,14 +1,22 @@
 [variables]
-    PORT = '80' # Esto le asegura a Nixpacks que el puerto por defecto es 80# Install Caddy as a system package
+    NPM_CONFIG_UPDATE_NOTIFIER = 'false'
+    PORT = '80'
 
-nixPkgs = ["caddy", "bun"]
+# 1. Configuración del entorno (Instalación de herramientas)
+[phases.setup]
+    nixPkgs = ["caddy", "bun"]
 
-# Specify the build phase commands
+# 2. Instalación de dependencias y Compilación
 [phases.build]
-cmds = ["bun install", "bun run build"]
+    dependsOn = ["setup"]
+    cmds = ["bun install", "bun run build"]
 
-# Specify the start command using Caddy to serve the static files
+# 3. Formateo del Caddyfile (Opcional pero recomendado para evitar errores)
+[phases.fmt]
+    dependsOn = ["setup"]
+    cmds = ["caddy fmt --overwrite Caddyfile"]
+
+# 4. Comando de inicio
 [start]
-# Assumes build output is in the 'dist' directory
-cmd = 'exec caddy run --config Caddyfile --adapter caddyfile 2>&1'
-
+    # Usamos exec para que Caddy sea el proceso principal del contenedor
+    cmd = "exec caddy run --config Caddyfile --adapter caddyfile"
