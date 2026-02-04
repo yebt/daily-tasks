@@ -1,28 +1,26 @@
-# https://nixpacks.com/docs/configuration/file
-
-# set up some variables to minimize annoyance
+# 1. Configuración del entorno
 [variables]
-    NPM_CONFIG_UPDATE_NOTIFIER = 'true' # the update notification is relatively useless in a production environment
-    NPM_CONFIG_FUND = 'false' # the fund notification is also pretty useless in a production environment
+    NIXPACKS_BUN_VERSION = 'latest'
 
-[phases.setup]
-    cmds = [
-        'bun i',
-        'bun run build'
-    ]
-    nixPkgs = ['bun'] # install caddy as a nix package
+# 2. Instalación de dependencias con Bun
+[phases.install]
+    dependsOn = ['setup']
+    cmds = ['bun install']
 
-# download caddy from nix
-[phases.caddy]
-    dependsOn = ['setup'] # make sure this phase runs after the default 'setup' phase
-    # nixpkgsArchive = 'ba913eda2df8eb72147259189d55932012df6301' # Caddy v2.8.4 - https://github.com/NixOS/nixpkgs/commit/ba913eda2df8eb72147259189d55932012df6301
-    nixPkgs = ['caddy'] # install caddy as a nix package
+# 3. Compilación de la app de Vue
+[phases.build]
+    dependsOn = ['install']
+    cmds = ['bun run build']
 
-# format the Caddyfile with fmt
-[phases.fmt]
-    dependsOn = ['caddy'] # make sure this phase runs after the 'caddy' phase so that we know we have caddy downloaded
-    cmds = ['caddy fmt --overwrite Caddyfile'] # format the Caddyfile to fix any formatting inconsistencies
-
-# start the caddy web server
+# 4. Configuración de Nginx para Vue Router (Single Page Application)
 [start]
-    cmd = 'exec caddy run --config Caddyfile --adapter caddyfile 2>&1' # start caddy using the Caddyfile config and caddyfile adapter
+    cmd = '''
+    echo "server {
+        listen $PORT;
+        root /app/dist;
+        index index.html;
+        location / {
+            try_files \$uri \$uri/ /index.html;
+        }
+    }" > /etc/nginx/conf.d/default.conf && nginx -g "daemon off;"
+    '''
