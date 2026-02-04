@@ -1,29 +1,12 @@
-# 1. Configuración del entorno
-[variables]
-    NIXPACKS_BUN_VERSION = 'latest'
+# Install Caddy as a system package
+nixPkgs = ["caddy", "bun"]
 
-# 2. Instalación de dependencias con Bun
-[phases.install]
-    dependsOn = ['setup']
-    cmds = [
-    'ls',
-    'bun install'
-    ]
-
-# 3. Compilación de la app de Vue
+# Specify the build phase commands
 [phases.build]
-    dependsOn = ['install']
-    cmds = ['bun run build']
+cmds = ["bun install", "bun run build"]
 
-# 4. Configuración de Nginx para Vue Router (Single Page Application)
+# Specify the start command using Caddy to serve the static files
 [start]
-    cmd = '''
-    echo "server {
-        listen $PORT;
-        root /app/dist;
-        index index.html;
-        location / {
-            try_files \$uri \$uri/ /index.html;
-        }
-    }" > /etc/nginx/conf.d/default.conf && nginx -g "daemon off;"
-    '''
+# Assumes build output is in the 'dist' directory
+cmd = 'exec caddy run --config Caddyfile --adapter caddyfile 2>&1'
+
