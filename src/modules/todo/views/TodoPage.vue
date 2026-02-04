@@ -14,6 +14,7 @@ import { useConfirmModal } from '@/shared/design-system/composables/useConfirmMo
 import ConfirmModal from '@/shared/design-system/components/ConfirmModal.vue'
 import TodoHeader from '../components/TodoHeader.vue'
 import TodoItem from '../components/TodoItem.vue'
+import TodoInput from '../components/TodoInput.vue'
 import GenDailyModal from '@modules/daily/components/GenDailyModal.vue'
 import DailyHistoryModal from '@modules/daily/components/DailyHistoryModal.vue'
 
@@ -69,13 +70,12 @@ const toggleDay = (indx: number) => {
   openDay.value = openDay.value === indx ? -1 : indx
 }
 
-const handleAddTodo = async function (dayIndex: WeekDayIndex) {
+const handleAddTodo = async (dayIndex: WeekDayIndex): Promise<void> => {
   if (!newTaskText.value.trim()) return
 
   if (!authUser.isAuthenticated || !authUser.user) return
 
   try {
-    // await TodoService.createTodo({
     TodoService.createTodo({
       text: newTaskText.value.trim(),
       status: TodoStatus.Waiting,
@@ -239,18 +239,14 @@ watch(
             </button>
 
             <div
-              v-if="openDay === index"
-              class="mt-2 mb-4 px-4 py-4 bg-white/50 rounded-b-lg space-y-4"
-            >
-              <div class="flex gap-2">
-                <input
-                  v-model="newTaskText"
-                  @keyup.enter="handleAddTodo(index)"
-                  type="text"
-                  placeholder="New task..."
-                  class="flex-1 px-4 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none transition"
-                />
-              </div>
+               v-if="openDay === index"
+               class="mt-2 mb-4 px-4 py-4 bg-white/50 rounded-b-lg space-y-4"
+             >
+               <TodoInput
+                 v-model="newTaskText"
+                 :day-index="index"
+                 @submit="handleAddTodo"
+               />
 
               <div class="space-y-1">
                 <TodoItem
