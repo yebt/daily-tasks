@@ -5,7 +5,10 @@
 # 2. Instalación de dependencias con Bun
 [phases.install]
     dependsOn = ['setup']
-    cmds = ['bun install']
+    cmds = [
+    'ls',
+    'bun install'
+    ]
 
 # 3. Compilación de la app de Vue
 [phases.build]
