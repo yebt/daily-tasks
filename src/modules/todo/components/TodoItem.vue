@@ -194,7 +194,7 @@ onClickOutside(textarea, () => {
         ? 'bg-white shadow-md ring-2 ring-blue-400/30'
         : 'hover:( outline-gray-900/20 ) outline-1 -outline-offset-1- outline-dashed outline-transparent',
     ]"
-    class="flex items-center gap-3 p-2 rounded-md group transition-all"
+    class="flex items-center gap-3 p-2 rounded-md group transition-all items-start"
     @mouseleave="handleContainerMouseLeave"
   >
     <div class="relative flex items-center justify-center">
@@ -237,15 +237,13 @@ onClickOutside(textarea, () => {
     <div
       v-if="!isEditing"
       @dblclick="handleDoubleClick"
-      class="text-sm flex-1 select-none cursor-text rounded py-0.5"
+      class="text-sm flex-1 select-none cursor-text rounded py-0.5 whitespace-break-spaces"
       :class="{
         'line-through text-slate-400 font-normal':
           todo.status === TodoStatus.Cancel || todo.status === TodoStatus.Completed,
         'text-emerald-700/70': todo.status === TodoStatus.Completed,
       }"
     >
-      <span></span>
-      <!-- {{ todo.text }} -->
       {{ todoElemnt.text }}
     </div>
 
