@@ -128,10 +128,13 @@ describe('TodoItem', () => {
 
     const textDiv = wrapper.find('div[class*="flex-1"]')
     await textDiv.trigger('dblclick')
+    await wrapper.vm.$nextTick()
 
-    const input = wrapper.find('input[type="text"]')
-    await input.setValue('Updated task')
-    await input.trigger('blur')
+    const textarea = wrapper.find('textarea')
+    await textarea.setValue('Updated task')
+    // Trigger click outside to simulate onClickOutside
+    document.body.click()
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.emitted('update:text')).toBeTruthy()
     expect(wrapper.emitted('update:text')?.[0]).toEqual(['Updated task'])
@@ -146,9 +149,12 @@ describe('TodoItem', () => {
 
     const textDiv = wrapper.find('div[class*="flex-1"]')
     await textDiv.trigger('dblclick')
+    await wrapper.vm.$nextTick()
 
-    const input = wrapper.find('input[type="text"]')
-    await input.trigger('blur')
+    const textarea = wrapper.find('textarea')
+    // Trigger click outside to simulate onClickOutside without changing text
+    document.body.click()
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.emitted('update:text')).toBeFalsy()
   })
