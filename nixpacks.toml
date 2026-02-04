@@ -11,7 +11,7 @@
         'export NPM_CONFIG_UPDATE_NOTIFIER=${NPM_CONFIG_UPDATE_NOTIFIER}',
         'export NPM_CONFIG_FUND=${NPM_CONFIG_FUND}',
         'bun i',
-        'bun build'
+        'bun run build'
     ]
     nixPkgs = ['bun'] # install caddy as a nix package
 
