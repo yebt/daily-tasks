@@ -1,4 +1,6 @@
-# Install Caddy as a system package
+[variables]
+    PORT = '80' # Esto le asegura a Nixpacks que el puerto por defecto es 80# Install Caddy as a system package
+
 nixPkgs = ["caddy", "bun"]
 
 # Specify the build phase commands

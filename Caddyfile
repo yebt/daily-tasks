@@ -1,5 +1,8 @@
+# vim: filetype=caddy
 :{$PORT} {
     root * dist
-    file_server
+    encode gzip
+    #file_server
+    try_files {path} {path}/ /index.html
     try_files {path} /index.html
 }
