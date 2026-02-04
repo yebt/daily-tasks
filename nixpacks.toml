@@ -7,9 +7,6 @@
 
 [phases.setup]
     cmds = [
-        'echo "Setting up environment variables..."',
-        'export NPM_CONFIG_UPDATE_NOTIFIER=${NPM_CONFIG_UPDATE_NOTIFIER}',
-        'export NPM_CONFIG_FUND=${NPM_CONFIG_FUND}',
         'bun i',
         'bun run build'
     ]
