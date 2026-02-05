@@ -8,6 +8,12 @@ export const todoRoutes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/all',
+    name: 'all',
+    component: () => import('@modules/todo/views/AllTasksPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/next',
     name: 'next',
     component: () => import('@modules/todo/views/NextPage.vue'),

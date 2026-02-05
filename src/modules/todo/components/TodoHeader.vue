@@ -32,6 +32,7 @@ const tabs: Array<{ name: string; path: string; icon: string }> = [
   { name: 'Today', path: '/todos', icon: 'i-lucide:target' },
   { name: 'Next', path: '/next', icon: 'i-lucide:clock' },
   { name: 'Someday', path: '/someday', icon: 'i-lucide:lightbulb' },
+  { name: 'All', path: '/all', icon: 'i-lucide:list' },
 ]
 
 const currentTab = computed<(typeof tabs)[0]>(() => {
