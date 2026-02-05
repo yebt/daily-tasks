@@ -49,7 +49,15 @@ export const useTodoStore = defineStore('todo', () => {
   // }
 
   const getTodosByDay = (dayIndex: number) => {
-    return todayTodos.value.filter((t) => t.dayOfWeek === dayIndex)
+    const today = new Date()
+    const firstWeekDay = today.getDate() - today.getDay() // First day is the day of the month - the day of the week
+    // const lastWeekDay = firstWeekDay + 6 // last day is the first day + 6
+
+    return todayTodos.value.filter((t) => {
+      return t.dayOfWeek === dayIndex
+        && t.createdAt.toDate().getDate() >= firstWeekDay
+        // && t.createdAt.toDate().getDate() <= lastWeekDay
+    })
   }
 
   return {
